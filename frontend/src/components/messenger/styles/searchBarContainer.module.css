@@ -1,0 +1,27 @@
+.searchBar {
+  border: 1px solid #EEEEEE;
+  display: grid;
+  grid-template-rows: 1fr 0fr;
+  grid-template-columns: 3fr 1fr;
+  justify-content: space-evenly;
+  height: max-content;
+}
+.inputSearchBar {
+  border: 0;
+  margin: 5px 12px;
+  border-radius: 6px;
+}
+
+.buttonSearchBar {
+  border: 0;
+  margin: 5px 12px;
+  border-radius: 6px;
+}
+
+.buttonSearchBar:focus {
+  outline: 0;
+}
+
+.inputSearchBar:focus {
+  outline: 0;
+}

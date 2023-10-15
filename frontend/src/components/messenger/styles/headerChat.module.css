@@ -1,0 +1,27 @@
+.headerChatContainer {
+  display: grid;
+  grid-template-columns: 0rem 0rem;
+  width: max-content;
+  height: max-content;
+  align-items: baseline;
+  margin: 2px auto;
+}
+
+.onlineStatus {
+  width: 10px;
+  height: 10px;
+  border-radius: 50px;
+  background-color: green;
+}
+.offlineStatus {
+  width: 10px;
+  height: 10px;
+  border-radius: 50px;
+  background-color: red;
+}
+.username {
+  margin: 0 0 0 20px;
+  font-family: "Montserrat", sans-serif;
+  font-size: 11pt;
+  color: #515151;
+}
