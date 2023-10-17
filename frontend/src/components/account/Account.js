@@ -1,7 +1,7 @@
 // import styles from './account.module.css'
 // import "./account.css";
 import Button from "../Login/Button";
-function Account({ username }) {
+function Account({ username, setRedirectChat}) {
   return (
     <aside class="profile-card">
       <header>
@@ -12,18 +12,23 @@ function Account({ username }) {
           />
         </a> */}
 
-        <h1>{!username ? "user name" : username}</h1>
+        <h1>{!username ? "user name" : username.split(",").join(" ")}</h1>
 
         <h2>Меню функций</h2>
       </header>
 
-      <div class="profile-bio">
+      <div className="profile-bio">
         <p>
           It takes monumental improvement for us to change how we live our
           lives. Design is the way we access that improvement.
         </p>
         <Button name="Настройки " />
-        <Button name="Чат" />
+        <Button
+          name="Чат"
+          onClick={(e) => {
+            setRedirectChat(true);
+          }}
+        />
         <Button name="Выход " />
       </div>
     </aside>

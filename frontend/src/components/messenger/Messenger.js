@@ -38,7 +38,7 @@ function Messenger(props) {
   const buttonSendMessageHandler = (e) => {
     setRequestServer([
       ...requestServer,
-      { username: "username", message: messageText },
+      { username: localStorage.getItem("JWT").split(",").slice(1).join(' '), message: messageText },
     ]);
     setMessageText("");
   };
@@ -60,7 +60,7 @@ function Messenger(props) {
 
         <MessageContainer>
           {responseServer.map((bodyMessage) => (
-            <Message key={v4()} data={bodyMessage.message} />
+            <Message key={v4()} data={bodyMessage.message} name={bodyMessage.username} />
           ))}
         </MessageContainer>
 

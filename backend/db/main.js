@@ -15,6 +15,7 @@ async function main(doc, typeRequest) {
 
   if (typeRequest === "auth") {
     const authStatus = await auth(doc, DB_MODEL, CONNECT_DB);
+    
     return authStatus;
   }
   if (typeRequest === "reg") {

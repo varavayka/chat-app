@@ -5,20 +5,22 @@ async function authentication(doc, model, connectDb) {
     passwordСonfirmed: false,
     error: false,
     foundUser: false,
+    userName: '' 
   };
   try {
     const CHECK_DOC = await checkDoc(doc, model);
 
     if (CHECK_DOC.searchStatus) {
-      const { salt, password } = CHECK_DOC.findDoc.find(
+      const { salt, password , username } = CHECK_DOC.findDoc.find(
         (account) => account.email === doc.email
       );
+      
       const requestAuthDoc = await passHash(doc.password, null, true, salt);
       if (requestAuthDoc === password) {
         REPORT_AUTH.passwordСonfirmed = true;
       }
       REPORT_AUTH.foundUser = true;
-
+      REPORT_AUTH.userName = username
       return REPORT_AUTH;
     }
     if (!CHECK_DOC.searchStatus) {

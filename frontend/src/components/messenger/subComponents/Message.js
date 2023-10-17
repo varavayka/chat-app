@@ -1,6 +1,6 @@
 import styles from "../styles/message.module.css";
 
-function Message({ data = "hello world", name = "username", date = "12 sec" }) {
+function Message({ data = "hello world", name , date = "12 sec" }) {
   const { message, username, dateSent, messageText, userData } = styles;
   return (
     <div className={message}>

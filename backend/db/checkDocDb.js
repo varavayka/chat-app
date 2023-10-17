@@ -15,7 +15,7 @@ async function checkDoc(doc, model) {
     const findedDoc = findDoc.filter((account) =>
       account.email === doc.email ? 1 : 0
     );
-
+      
     if (findedDoc.length === 0) {
       return { searchStatus: false, error: false, findDoc };
     }

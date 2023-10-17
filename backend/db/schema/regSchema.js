@@ -3,7 +3,7 @@ const {Schema}  = require('mongoose')
 
 
 const regSchema = new Schema({
-    userName: String,
+    username: String,
     email: String,
     shortName: String,
     password: String,

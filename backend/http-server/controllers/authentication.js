@@ -8,7 +8,7 @@ const authenticationHandler = async (req, res) => {
     const dbRequest = await db(doc, 'auth')
     
     if(!dbRequest.passwordСonfirmed || !dbRequest.foundUser)  return res.status(401).send(JSON.stringify({permissonAccess: false, type: ' authentication'}))
-    if(dbRequest.passwordСonfirmed)  return res.status(301).send(JSON.stringify({permission:true, jwt: 'kirillKonevskikhId123!@#',type: ' authentication' }))
+    if(dbRequest.passwordСonfirmed)  return res.status(301).send(JSON.stringify({permission:true, jwt: 'jwtId123,kirill,Konevskikh',type: ' authentication' }))
        
    
 };

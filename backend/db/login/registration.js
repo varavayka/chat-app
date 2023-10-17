@@ -25,8 +25,7 @@ async function registration(doc, model, connectDb) {
         regSchema
       );
       await INSER_DOC.create(DOC_DB);
-
-      return { registrationStatus: true, error: false };
+      return { registrationStatus: true, error: false, username: DOC_DB.username };
     }
     return { registrationStatus: false, error: false };
   } catch (e) {

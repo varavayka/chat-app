@@ -3,7 +3,7 @@ import styles from "./app.module.css";
 import Login from "./components/Login/Login";
 import Account from "./components/account/Account";
 import Messenger from "./components/messenger/Messenger";
-import { Route, Routes, redirect, useNavigate } from "react-router-dom";
+import { Route, Routes,useNavigate } from "react-router-dom";
 function App() {
   const { App } = styles;
   const [actionForm, setActionForm] = useState("authentication");
@@ -15,9 +15,12 @@ function App() {
   });
   const [requestLogin, setRequestLogin] = useState({});
   const [accesslogin, setAccessLogin] = useState({});
-  const [allowRedirect, setAllowRedirect] = useState(false)
+  const [allowRedirect, setAllowRedirect] = useState(false);
+  const [redirectChat, setRedirectChat] = useState(false);
   const navigate = useNavigate();
-
+  if (redirectChat) {
+    navigate(`${localStorage.getItem("JWT").split(",")[0]}QQQ`);
+  }
   const SendButtonHandler = (e) => {
     const checkTypeLogin = Object.values(inputData).map((values) =>
       values !== "" ? true : false
@@ -30,9 +33,6 @@ function App() {
     if (!resultCheck) {
       setRequestLogin({ ...inputData, typeRequest: "auth" });
     }
-    console.log(localStorage.getItem("JWT"));
-    if(allowRedirect)
-    navigate('/account')
   };
   useEffect(() => {
     async function loginData() {
@@ -50,22 +50,25 @@ function App() {
               permission = null,
               ...all
             } = await (await fetch(URL, REQUEST_BODY)).json();
+            console.log(all)
             if (registrationStatus) {
               setAllowRequest(false);
-              setAllowRedirect(false)
+              setAllowRedirect(false);
               return;
             }
             if (permission) {
-
               localStorage.setItem("JWT", all.jwt);
               setAllowRequest(false);
-              setAllowRedirect(true)
+              setAllowRedirect(true);
+              const userData = localStorage.getItem("JWT").split(",");
+              navigate(`/${userData[0]}`);
+
               return;
             }
 
             if (!registrationStatus || !permission) {
               setAllowRequest(false);
-              setAllowRedirect(false)
+              setAllowRedirect(false);
               return;
             }
           } catch (e) {
@@ -78,8 +81,7 @@ function App() {
     }
     loginData();
   }, [requestLogin, actionForm, accesslogin, allowRequest]);
-  
-  
+
   return (
     <div className="App">
       <Routes>
@@ -97,6 +99,24 @@ function App() {
             </div>
           }
         />
+        <Route
+          path={`${localStorage.getItem("JWT").split(",")[0]}`}
+          element={
+            <Account
+              username={`${localStorage.getItem("JWT").split(",").slice(1)}`}
+              setRedirectChat={setRedirectChat}
+            />
+          }
+        />
+        
+          <Route
+            path={`${localStorage.getItem("JWT").split(",")[0]}QQQ`}
+            element={
+              <Messenger
+                userData={`${localStorage.getItem("JWT").split(",")}`}
+              />
+            }
+          />
       </Routes>
     </div>
   );
