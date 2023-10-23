@@ -10,11 +10,9 @@ ws.on("connection", (socket) => {
   socket.room = v4();
   socketCache.add(socket);
   socket.on("message", (buffer) => {
-    
     const userData = JSON.parse(buffer.toString());
     socketCache.forEach((client) => {
-      
-      client.send(JSON.stringify({...userData}));
+      client.send(JSON.stringify({ ...userData }));
     });
   });
   socket.on("close", () => {

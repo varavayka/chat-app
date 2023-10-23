@@ -7,7 +7,7 @@ const authenticationRoute = require("../route/authentication");
 
 const router = Router();
 
-router.use("/", rootRoute);
+router.use("/", /*[(data) => console.log(data)] таким образом можно записывать middleware*/  rootRoute);
 router.use("/account", accountRoute);
 router.use("/messenger", messengerRoute);
 router.use("/authentication", authenticationRoute);

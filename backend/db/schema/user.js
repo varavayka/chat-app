@@ -1,8 +1,7 @@
-const {Schema}  = require('mongoose')
+require("dotenv").config({ path: ".env" });
 
-
-
-const regSchema = new Schema({
+const {Schema, model}  = require('mongoose')
+module.exports = model(process.env.MONGO_DB_COLLECTIONS,new Schema({
     username: String,
     email: String,
     shortName: String,
@@ -11,6 +10,4 @@ const regSchema = new Schema({
     date: Date,
     salt: String,
     uuid: String
-})
-
-module.exports = regSchema
+}))

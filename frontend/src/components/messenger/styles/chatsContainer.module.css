@@ -1,7 +1,0 @@
-.chats {
-  display: grid;
-  /* background-color: red; */
-  grid-template-columns: 1fr ;
-  grid-template-rows: 2fr  35fr;
-  border-right: 1px solid #E0E0E0;;
-}
