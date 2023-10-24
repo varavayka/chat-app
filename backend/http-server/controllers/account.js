@@ -1,5 +1,5 @@
 const accountHandler = (req, res) => {
-    console.log('redirect is completed')
+    res.status(301).redirect('/messenger')
 };
 
 module.exports = accountHandler;

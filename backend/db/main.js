@@ -80,6 +80,23 @@ class DbController {
   get registrationUser() {
     return this.registrationResult;
   }
+  set updateUserDoc({jwt,secretJwt, email}) {
+    return this.updateDoc =  (async() => {
+      await this.userModel.updateOne({email}, {$set:{jwt,  secretJwt}})
+    })()
+  }
+  
+  set checkTokenRequest({uuid}) {
+    return this.secretToken = (async () => {
+      const {secretJwt, jwt} = await this.userModel.findOne({uuid})
+      
+      return {secretJwt, jwt}
+    })()
+  }
+
+  get checkTokenRequest() {
+    return this.secretToken
+  }
 }
 module.exports = async function (candidate) {
   try {

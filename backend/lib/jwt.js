@@ -29,6 +29,4 @@ async function main(data) {
   return tokenAndSecret;
 }
 module.exports = main;
-// jwt.verify(token, "secret", (err, result) => {
-//   console.log(result);
-// });
+
