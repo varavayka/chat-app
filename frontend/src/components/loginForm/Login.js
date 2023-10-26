@@ -1,6 +1,6 @@
 import { useState } from "react";
 import styles from "./css/Login.module.css";
-import ModalWindow from "./ModalWindow";
+// import ModalWindow from "./ModalWindow";
 const Login = ({sendRequest}) => {
   const { loginContainer, form, thumbnail, loginForm, message } = styles;
 
