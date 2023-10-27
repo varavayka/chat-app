@@ -1,4 +1,4 @@
-require("dotenv").config({ path: "./.env" });
+require("dotenv").config();
 const { v4: uuid } = require("uuid");
 const { connect } = require("mongoose");
 const userModel = require("./schema/user");
@@ -65,10 +65,10 @@ class DbController {
           salt,
           uuid: uuid(),
         };
-        await this.userModel.create(preparationCandidate)
+        await this.userModel.create(preparationCandidate);
         return { registrationStatus: true };
       } catch (e) {
-        cosnole.log(e)
+        cosnole.log(e);
         return {
           registrationStatus: false,
           error: true,
@@ -80,29 +80,43 @@ class DbController {
   get registrationUser() {
     return this.registrationResult;
   }
-  set updateUserDoc({jwt,secretJwt, email}) {
-    return this.updateDoc =  (async() => {
-      await this.userModel.updateOne({email}, {$set:{jwt,  secretJwt}})
-    })()
+  set updateUserDoc({ jwt, secretJwt, email }) {
+    return (this.updateDoc = (async () => {
+      await this.userModel.updateOne({ email }, { $set: { jwt, secretJwt } });
+    })());
   }
+
+  set checkTokenRequest(jwtRequest) {
+    return (this.secretToken = (async () => {
+      try {
+        
+          const getJwt = await this.userModel.findOne({jwt: jwtRequest});
+          if(getJwt) {
+            const {secretJwt} = getJwt 
+            return { tokenFound: true, secretJwt };
+          }
+          return { tokenFound: false };
   
-  set checkTokenRequest({uuid}) {
-    return this.secretToken = (async () => {
-      const {secretJwt, jwt} = await this.userModel.findOne({uuid})
-      
-      return {secretJwt, jwt}
-    })()
+      } catch(e) {
+
+        return {error:true, errorMessage:e.message}
+      }
+
+    })());
   }
 
   get checkTokenRequest() {
-    return this.secretToken
+    return this.secretToken;
   }
 }
-module.exports = async function (candidate) {
+module.exports = async function (candidate = null) {
   try {
     const { connection } = await connect(process.env.MONGO_DB_HOST);
     const db = new DbController(userModel, connection.close);
-    db.searchUser = candidate;
+    if (candidate) {
+      db.searchUser = candidate;
+      return db;
+    }
     return db;
   } catch (e) {
     return e.message;

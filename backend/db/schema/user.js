@@ -1,7 +1,9 @@
-require("dotenv").config({ path: ".env" });
+require("dotenv").config();
 
-const {Schema, model}  = require('mongoose')
-module.exports = model(process.env.MONGO_DB_COLLECTIONS,new Schema({
+const { Schema, model } = require("mongoose");
+module.exports = model(
+  process.env.MONGO_DB_COLLECTIONS,
+  new Schema({
     username: String,
     email: String,
     shortName: String,
@@ -10,5 +12,6 @@ module.exports = model(process.env.MONGO_DB_COLLECTIONS,new Schema({
     secretJwt: String,
     date: Date,
     salt: String,
-    uuid: String
-}))
+    uuid: String,
+  })
+);

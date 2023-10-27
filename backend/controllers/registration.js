@@ -1,5 +1,5 @@
-const db = require("../../db/main");
 const { validationResult } = require("express-validator");
+const db = require("../db/main");
 const registrationHandler = async (req, res) => {
   try {
     const checkValidCredentials = validationResult(req);

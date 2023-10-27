@@ -1,14 +1,13 @@
-require("dotenv").config({path: "./.env"});
+require("dotenv").config();
  
 const cors = require("cors");
 const express = require("express");
 
 const app = express();
-const router = require("./router/router");
+const router = require('./router/router');
+
 app.use(cors());
 app.use(express.json());
-
-// app.use((req,res) => console.log(req.body))
 
 app.use(router);
 
