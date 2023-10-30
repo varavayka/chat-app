@@ -89,24 +89,29 @@ class DbController {
   set checkTokenRequest(jwtRequest) {
     return (this.secretToken = (async () => {
       try {
-        
-          const getJwt = await this.userModel.findOne({jwt: jwtRequest});
-          if(getJwt) {
-            const {secretJwt} = getJwt 
-            return { tokenFound: true, secretJwt };
-          }
-          return { tokenFound: false };
-  
-      } catch(e) {
-
-        return {error:true, errorMessage:e.message}
+        const getJwt = await this.userModel.findOne({ jwt: jwtRequest });
+        if (getJwt) {
+          const { secretJwt } = getJwt;
+          return { tokenFound: true, secretJwt };
+        }
+        return { tokenFound: false };
+      } catch (e) {
+        return { error: true, errorMessage: e.message };
       }
-
     })());
   }
 
   get checkTokenRequest() {
     return this.secretToken;
+  }
+
+  async logout(token) {
+    try {
+      await this.userModel.updateOne({ jwt: token }, { $set: { jwt: "" } });
+      return { logout: true };
+    } catch (e) {
+      return { logout: false, error: e.message };
+    }
   }
 }
 module.exports = async function (candidate = null) {

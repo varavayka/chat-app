@@ -4,6 +4,7 @@ const accountRoute = require("./route/account");
 const messengerRoute = require("./route/messenger");
 const registrationRoute = require("./route/registration");
 const authenticationRoute = require("./route/authentication");
+const logoutRoute = require('./route/logout')
 const authorization = require("../middleware/authorization");
 const validator = require("../middleware/validator");
 const router = Router();
@@ -16,4 +17,5 @@ router.use("/api/authorization", authorization, accountRoute);
 router.use("/messenger", authorization, messengerRoute);
 router.use("/authentication", authenticationRoute);
 router.use("/registration", validator, registrationRoute);
+router.use('/logout', logoutRoute)
 module.exports = router;

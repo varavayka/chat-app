@@ -17,8 +17,13 @@ const signToken = async (data, secret, lifeTimeToken) => {
 };
 
 const verifyJwt = async (token, secret) => {
-  verify(token, secret, (err,result) => console.log(!result))
-  // return resultVerify; //допилить по выводу ошибки!
+  try {
+    
+    const resultVerifyToken = await (async () => verify(token, secret))()
+    return {authorized: true, ...resultVerifyToken}
+  } catch(e) {
+   return {authorized: false, message: e.message}
+  }
 };
 
 module.exports = { secretKey, signToken, verifyJwt };
