@@ -5,7 +5,7 @@ const SearchBar = () => {
   return (
     <div className={`${discussion} ${search}`}>
       <div className={`${searchbar}`}>
-        <i className="" aria-hidden="true"></i>
+        <i className=""></i>
         <input type="text" placeholder="Search..." className={input} />
       </div>
     </div>

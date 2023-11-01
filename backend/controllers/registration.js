@@ -1,5 +1,7 @@
 const { validationResult } = require("express-validator");
+
 const db = require("../db/main");
+const typeBody = require('../lib/typeBody')
 const registrationHandler = async (req, res) => {
   try {
     const checkValidCredentials = validationResult(req);
@@ -7,26 +9,18 @@ const registrationHandler = async (req, res) => {
       return res.status(400).json(checkValidCredentials);
     }
 
-    const userData = JSON.parse(JSON.stringify(req.body));
-    const dbRequest = await db(userData);
+    const {email} = typeBody(req);
+    const databaseQuery = await db();
+    const { resultFindUser } = await databaseQuery.findAccount(email);
 
-    const { searchUser } = await dbRequest.searchUser;
-    if (!searchUser) {
-      dbRequest.registrationUser = userData;
-      const { registrationStatus } = await dbRequest.registrationUser;
-      if (registrationStatus) {
-        return res
-          .status(200)
-          .json({
-            registrationStatus,
-            message: "Пользователь зарегистрирован",
-          });
+    if(!resultFindUser) {
+      const { registrationStatus} = await databaseQuery.registrationCandidate(typeBody(req));
+      if(registrationStatus) {
+        return res.status(200).json({ registrationStatus});
       }
     }
-    if (searchUser) {
-      return res.status(401).json({
-        message: "Пользователь существует",
-      });
+    if(resultFindUser) {
+      return res.status(401).json({registrationStatus: false});
     }
   } catch (e) {
     console.log(e.message)

@@ -13,7 +13,7 @@ router.use(
   "/",
   /*[(data) => console.log(data)] таким образом можно записывать middleware*/ rootRoute
 );
-router.use("/api/authorization", authorization, accountRoute);
+// router.use("/api/authorization", authorization, accountRoute);
 router.use("/messenger", authorization, messengerRoute);
 router.use("/authentication", authenticationRoute);
 router.use("/registration", validator, registrationRoute);

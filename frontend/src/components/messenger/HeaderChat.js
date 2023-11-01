@@ -3,9 +3,9 @@ const HeaderChat = () => {
   const { headerChat, icon, name, clickable, right } = styles;
   return (
     <div className={headerChat}>
-      <i className={icon} aria-hidden="true"></i>
+      <i className={icon}></i>
       <p className={name}>Megan Leib</p>
-      <i className={`${icon} ${clickable}  ${right}`} aria-hidden="true"></i>
+      <i className={`${icon} ${clickable}  ${right}`}></i>
     </div>
   );
 };

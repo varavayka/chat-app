@@ -5,22 +5,22 @@ const Menu = () => {
     <nav className={menu}>
       <ul className={items}>
         <li className={item}>
-          <i className="" aria-hidden="true"></i>
+          <i className="" ></i>
         </li>
         <li className={item}>
-          <i className="" aria-hidden="true"></i>
+          <i className="" ></i>
         </li>
         <li className={item}>
-          <i className="" aria-hidden="true"></i>
+          <i className="" ></i>
         </li>
         <li className={item}>
-          <i className="" aria-hidden="true"></i>
+          <i className="" ></i>
         </li>
         <li className={item}>
-          <i className="" aria-hidden="true"></i>
+          <i className="" ></i>
         </li>
         <li className={item}>
-          <i className="" aria-hidden="true"></i>
+          <i className="" ></i>
         </li>
       </ul>
     </nav>

@@ -10,7 +10,7 @@ const secretKey = async (sizeKey = 256) => {
 };
 const signToken = async (data, secret, lifeTimeToken) => {
   const optionalData = { ...(data || {}) };
-  const tokenLifeTime = { expiresIn: lifeTimeToken || "1h" };
+  const tokenLifeTime = { expiresIn: lifeTimeToken || "1m" };
   const signJwt = (async () =>
     sign({ ...optionalData }, secret, tokenLifeTime))();
   return { jwt: signJwt, secret };

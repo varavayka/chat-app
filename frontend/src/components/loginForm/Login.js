@@ -3,61 +3,72 @@ import styles from "./css/Login.module.css";
 // import ModalWindow from "./ModalWindow";
 const Login = ({ setInputData, setSwitchPath }) => {
   const { loginContainer, form, thumbnail, loginForm, message } = styles;
-  const [data, setData] = useState({ email: "", password: "" });
-  const [switchForm, setSwitchForm] = useState(false);
-  const inputDataHandler = (e, name) => {
-    setData({ ...data, [name]: e.target.value });
+
+  const [data, setData] = useState({});
+
+  const [formToggle, setFormToggle] = useState(false);
+
+  const inputDataHandler = (setStateAction, stateAction, name) => {
+    return ({ target }) =>
+      setStateAction({ ...stateAction, [name]: target.value });
   };
+  const inputValue = (inputState, keyName) => inputState[keyName] || "";
+
+  const createInput = (type, placeholder, onChange, value) => {
+    
+    return formToggle ? (
+      <input
+        type={type}
+        placeholder={placeholder}
+        onChange={onChange}
+        value={value}
+      />
+    ) : (
+      ""
+    );
+  };
+  const switchButtonHandler = () => {
+    if(!formToggle ) {
+      setFormToggle(true)
+      setSwitchPath(!formToggle)
+      return
+    }
+    setFormToggle(false)
+    setSwitchPath(formToggle)
+  }
+  const sendRequest = () => {
+    setInputData(data)
+    setData({})
+  }
   return (
     <div className={loginContainer}>
       <div className={form}>
         <div className={thumbnail}></div>
         <form className={loginForm} onSubmit={(e) => e.preventDefault()}>
-          {switchForm ? (
-            <input
-              type="text"
-              placeholder="user name"
-              onChange={(e) => inputDataHandler(e, "username")}
-              value={data.username || ''} 
-            />
-          ) : (
-            ""
+          {createInput(
+            "text",
+            "user name",
+            inputDataHandler(setData,data, "username"),
+            inputValue(data, "username")
           )}
           <input
             type="email"
             placeholder="Email"
-            onChange={(e) => inputDataHandler(e, "email")}
-            value={data.email || ''}
+            onChange={inputDataHandler(setData, data, "email")}
+            value={inputValue(data, "email")}
           />
           <input
             type="password"
             placeholder="Password"
-            onChange={(e) => inputDataHandler(e, "password")}
-            value={data.password || ''}
+            onChange={inputDataHandler(setData, data, "password")}
+            value={inputValue(data, "password")}
           />
-          <button onClick={() => setInputData(data)}>
-            {!switchForm ? "Войти" : "Зарегистрироваться"}
+          <button onClick={sendRequest}>
+            {!formToggle ? "Войти" : "Зарегистрироваться"}
           </button>
           <p className={message}>
-            {/* {!switchForm ? "Нет аккаунта ?" : "Есть аккаунт ?"}{" "} */}
-            <button
-              onClick={() => {
-                if(!switchForm) {
-                  setSwitchForm(true)
-                  setSwitchPath('registration')
-                  setData({})
-                  return 
-                }
-                setSwitchForm(false)
-                setSwitchPath('authentication')
-                setData({})
-
-                return 
-              }
-              }
-            >
-              {!switchForm ? "Зарегистрироваться" : "Войти"}
-            </button>
+            {!formToggle ? "Нет аккаунта ?" : "Есть аккаунт ?"}
+            <button onClick={switchButtonHandler}>{!formToggle ? "Зарегистрироваться" : "Войти"}</button>
           </p>
         </form>
       </div>
