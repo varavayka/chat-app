@@ -1,30 +1,28 @@
 const { validationResult } = require("express-validator");
 
-const db = require("../db/main");
-const typeBody = require('../lib/typeBody')
+const db = require("../db/main")();
+const typeBody = require("../lib/typeBody");
 const registrationHandler = async (req, res) => {
   try {
     const checkValidCredentials = validationResult(req);
     if (!checkValidCredentials.isEmpty()) {
       return res.status(400).json(checkValidCredentials);
     }
+    const { registration, preparationCandidate, findDoc } = await db;
+    const { email, ...other } = typeBody(req);
+    const { registrationStatus } = await registration(
+      await findDoc({ email }),
+      await preparationCandidate({ ...other, email }, 256)
+    );
 
-    const {email} = typeBody(req);
-    const databaseQuery = await db();
-    const { resultFindUser } = await databaseQuery.findAccount(email);
-
-    if(!resultFindUser) {
-      const { registrationStatus} = await databaseQuery.registrationCandidate(typeBody(req));
-      if(registrationStatus) {
-        return res.status(200).json({ registrationStatus});
-      }
+    if (registrationStatus) {
+      return res.status(200).json({ registrationStatus });
     }
-    if(resultFindUser) {
-      return res.status(401).json({registrationStatus: false});
+    if (!registrationStatus) {
+      return res.status(401).json({ registrationStatus });
     }
   } catch (e) {
-    console.log(e.message)
+    console.log(e.message);
   }
 };
-
 module.exports = registrationHandler;

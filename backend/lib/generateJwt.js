@@ -11,18 +11,20 @@ const secretKey = async (sizeKey = 256) => {
 const signToken = async (data, secret, lifeTimeToken) => {
   const optionalData = { ...(data || {}) };
   const tokenLifeTime = { expiresIn: lifeTimeToken || "1m" };
-  const signJwt = (async () =>
-    sign({ ...optionalData }, secret, tokenLifeTime))();
-  return { jwt: signJwt, secret };
+  const signJwt = await (async () => sign({ ...optionalData }, await secret, tokenLifeTime))();
+  return { jwt:  signJwt, secret };
 };
 
 const verifyJwt = async (token, secret) => {
   try {
     
     const resultVerifyToken = await (async () => verify(token, secret))()
+    
     return {authorized: true, ...resultVerifyToken}
   } catch(e) {
-   return {authorized: false, message: e.message}
+    console.log(e.message)
+
+    return {authorized: false, message: e.message}
   }
 };
 
