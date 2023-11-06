@@ -1,0 +1,36 @@
+.message {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  width: max-content;
+}
+
+.message .photo {
+  display: block;
+  width: 45px;
+  height: 45px;
+  background: #e6e7ed;
+  -moz-border-radius: 50px;
+  -webkit-border-radius: 50px;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.response-time {
+  float: right;
+  margin-right: 40px !important;
+}
+
+.response {
+  float: right;
+  margin-right: 0px !important;
+  margin-left: auto; /* flexbox alignment rule */
+}
+
+.response .text {
+  background-color: #e3effd !important;
+}
+.textOnly {
+  margin-left: 45px;
+}
