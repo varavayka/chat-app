@@ -1,73 +1,48 @@
 import { useState } from "react";
 import styles from "./css/Login.module.css";
 // import ModalWindow from "./ModalWindow";
-const Login = ({ setInputData, setSwitchPath }) => {
+const Login = ({ dataTransferhandler,setPath , setAllowRequest}) => {
   const { loginContainer, form, thumbnail, loginForm, message } = styles;
-
-  const [data, setData] = useState({});
-
+  const [inputValue, setInputValue] = useState({});
   const [formToggle, setFormToggle] = useState(false);
 
   const inputDataHandler = (setStateAction, stateAction, name) => {
     return ({ target }) =>
       setStateAction({ ...stateAction, [name]: target.value });
   };
-  const inputValue = (inputState, keyName) => inputState[keyName] || "";
-
-  const createInput = (type, placeholder, onChange, value) => {
-    
-    return formToggle ? (
-      <input
-        type={type}
-        placeholder={placeholder}
-        onChange={onChange}
-        value={value}
-      />
-    ) : (
-      ""
-    );
-  };
   const switchButtonHandler = () => {
-    if(!formToggle ) {
-      setFormToggle(true)
-      setSwitchPath(!formToggle)
-      return
-    }
-    setFormToggle(false)
-    setSwitchPath(formToggle)
+    setPath(formToggle)
+    return !formToggle ? setFormToggle(!!formToggle) : setSwitchPath(!formToggle)
   }
-  const sendRequest = () => {
-    setInputData(data)
-    setData({})
+  const sendButtonHandler = () => {
+    dataTransferhandler(inputValue)
+    setInputValue({})
+    setAllowRequest(true)
   }
+
   return (
     <div className={loginContainer}>
       <div className={form}>
         <div className={thumbnail}></div>
         <form className={loginForm} onSubmit={(e) => e.preventDefault()}>
-          {createInput(
-            "text",
-            "user name",
-            inputDataHandler(setData,data, "username"),
-            inputValue(data, "username")
-          )}
+          {
+            <input type="text" placeholder="user name" onChange={inputDataHandler(setInputValue,inputValue, "username")}/>
+          }
           <input
             type="email"
             placeholder="Email"
-            onChange={inputDataHandler(setData, data, "email")}
-            value={inputValue(data, "email")}
+            onChange={inputDataHandler(setInputValue, inputValue, "email")}
+            value={inputValue(inputValue, "email")}
           />
           <input
             type="password"
             placeholder="Password"
-            onChange={inputDataHandler(setData, data, "password")}
-            value={inputValue(data, "password")}
+            onChange={inputDataHandler(setInputValue, inputValue, "password")}
+            value={inputValue(inputValue, "password")}
           />
-          <button onClick={sendRequest}>
-            {!formToggle ? "Войти" : "Зарегистрироваться"}
-          </button>
-          <p className={message}>
-            {!formToggle ? "Нет аккаунта ?" : "Есть аккаунт ?"}
+          <button onClick={sendButtonHandler }> {!formToggle ? "Войти" : "Зарегистрироваться"}</button>
+           
+          <p className={message}>{!formToggle ? "Нет аккаунта ?" : "Есть аккаунт ?"}
             <button onClick={switchButtonHandler}>{!formToggle ? "Зарегистрироваться" : "Войти"}</button>
           </p>
         </form>

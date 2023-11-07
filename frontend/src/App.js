@@ -3,39 +3,67 @@ import { Route, Routes, useNavigate } from "react-router-dom";
 
 import Login from "./components/loginForm/Login";
 import Messenger from "./components/messenger/Messenger";
+// const navigate = useNavigate()
 function App() {
-  const [inputData, setInputData] = useState({})
-  const [requestPath, setRequestPath] = useState(false)
+  const [transmittedData, setTransmittedData] = useState({});
+  const [toggleForm, setToggleForm] = useState(false);
+  const [allowRequest, setAllowRequest] = useState(false);
+  const transmittedDataHandler = (data) => {
+    return setTransmittedData({ ...transmittedData, ...data });
+  };
 
-  const navigate = useNavigate()
   useEffect(() => {
-    (async () => {
-      if((inputData.email || inputData.password) || inputData.username) {
-        const dataRequest = {body: JSON.stringify(inputData), headers: {'Content-Type': 'application/json; charset=UTF-8'}, method:'POST'}
-        const response = await (await  fetch(`http://localhost:9090/${!requestPath ? 'authentication' : 'registration' }`,dataRequest)).json()
-        if(!requestPath) {
-          if(!response.userSearch) {
-            console.log('пароль или почта не верны')
-            return 
-          }
-          if(response.userSearch) {
-            navigate('messenger')
-            return  localStorage.setItem('jwt', JSON.stringify(response))
+    const dataRequest = (body, headers, method) => ({ body, headers, method });
+    async function httpAuthorization(url, dataRequest) {
+      try {
+        const {jwt, userAuthenticated, registrationStatus} = await fetch(url, dataRequest)
 
-          }
+        switch(true) {
+          case !toggleForm:
+            if(userAuthenticated) {
+              localStorage.setItem('jwt', jwt)
+              console.log('Пользователь аутентифицирован')
+              break
+            }
+            console.log('Пользователь не аутентифицирован')
+            break
+          
+          case toggleForm:
+            if(registrationStatus) {
+              console.log('Пользователь зарегистрирован')
+              break
+            }
+            console.log('Пользователь не зарегистрирован')
+            break
         }
-        return 
+      } catch(e) {
+        console.log(e)
       }
-      
-    })()
-    
-    
-  }, [inputData, requestPath, navigate])
+    }
+    httpAuthorization(
+      `http://localhost:9090/${!toggleForm ? 'authentication':'registration'}`,
+      dataRequest(
+        JSON.stringify(transmittedData),
+        { "Content-Type": "application/json charset=UTF-8" },
+        "POST"
+      )
+    );
+  }, [allowRequest, toggleForm]);
+
   return (
     <div className="App">
       <Routes>
-        <Route path="/" element={<Login setInputData={setInputData} setSwitchPath={setRequestPath}/>} />
-         <Route path="messenger" element={<Messenger/>} /> 
+        <Route
+          path="/"
+          element={
+            <Login
+              transmittedDataHandler={transmittedDataHandler}
+              setPath={setToggleForm}
+              setAllowRequest={setAllowRequest}
+            />
+          }
+        />
+        <Route path="messenger" element={<Messenger />} />
       </Routes>
     </div>
   );
