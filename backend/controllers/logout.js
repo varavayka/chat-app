@@ -5,21 +5,16 @@ const logout = async (req,res) => {
     const tokenRequest = authorization.split(" ")[1];
     const {logOut} = await db;
     const {logout, tokenFound} = await logOut(tokenRequest);
-    if(tokenFound) {
-        if(logout) {
-            return res.status(200).json({logout})
-        }
-        if(!logout) {
+    switch(true) {
+        case tokenFound:
+            if(logout) {
+                return res.status(200).json({logout})
+            }
             return res.status(400).json({logout})
-        }
+        case !tokenFound:
+            return res.status(400).send('Пользователь не авторизирован')
 
-    }
-    if(!tokenFound) {
-
-        return res.status(400).send('Пользователь не авторизирован')
-    }
-    
-    
+    }  
 }
 
 module.exports = logout

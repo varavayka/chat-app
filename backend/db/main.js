@@ -17,7 +17,7 @@ const logOut = async (token) => {
     return {logout: true, tokenFound: true}
   }
   return {logout:false, tokenFound: false}
-  // return logout
+  
 }
 const preparationCandidate = async ({password,email,username},  saltSize) => {
   try {
@@ -51,7 +51,7 @@ const authentication = async (resultFind, requestPassword) => {
       const computedHash = await hashPass(requestPassword, null, true, salt)
       
       if(computedHash === password) {
-        const { jwt, secret } = await signToken({uuid,email}, (await secretKey(256)),  "1m")
+        const { jwt, secret } = await signToken({uuid,email}, (await secretKey(256)),  "1h")
         await updateUserData({ jwt, secretJwt:secret }, {email});
         return { userAuthenticated: true, jwt, resultFindUser: true}
       }
@@ -69,7 +69,6 @@ const authentication = async (resultFind, requestPassword) => {
   }
 
 }
-
 module.exports = async function () {
   try {
     await connect(process.env.MONGO_DB_HOST);

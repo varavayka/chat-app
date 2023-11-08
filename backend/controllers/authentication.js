@@ -3,6 +3,7 @@ const db = require("../db/main")();
 const typeBody = require("../lib/typeBody");
 const sendResponse = require('../lib/sendResponse')
 const authenticationHandler = async (req, res) => {
+  console.log(req.body)
   try {
     const validCredentials = validationResult(req);
     if (!validCredentials.isEmpty()) {

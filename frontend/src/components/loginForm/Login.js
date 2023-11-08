@@ -1,74 +1,58 @@
 import { useState } from "react";
 import styles from "./css/Login.module.css";
 // import ModalWindow from "./ModalWindow";
-const Login = ({ setInputData, setSwitchPath }) => {
+const Login = ({transferInputData}) => {
   const { loginContainer, form, thumbnail, loginForm, message } = styles;
 
-  const [data, setData] = useState({});
+  const [formToggle, setformToggle] = useState(false);
+  const [inputData, setInputData] = useState({});
 
-  const [formToggle, setFormToggle] = useState(false);
-
-  const inputDataHandler = (setStateAction, stateAction, name) => {
-    return ({ target }) =>
-      setStateAction({ ...stateAction, [name]: target.value });
+  const inputGetValue = (setValue, value, name) => {
+    return ({ target }) => setValue({ ...value, [name]: target.value });
   };
-  const inputValue = (inputState, keyName) => inputState[keyName] || "";
+  const sendButtonHandler = () => {
+    transferInputData({...formToggle})
+    setInputData({})
+  }
+  const toggleFormButtonHandler = () => {
+    setInputData({})
+    return !formToggle ? setformToggle(true) : setformToggle(false)
+  }
 
-  const createInput = (type, placeholder, onChange, value) => {
-    
-    return formToggle ? (
-      <input
-        type={type}
-        placeholder={placeholder}
-        onChange={onChange}
-        value={value}
-      />
-    ) : (
-      ""
-    );
-  };
-  const switchButtonHandler = () => {
-    if(!formToggle ) {
-      setFormToggle(true)
-      setSwitchPath(!formToggle)
-      return
-    }
-    setFormToggle(false)
-    setSwitchPath(formToggle)
-  }
-  const sendRequest = () => {
-    setInputData(data)
-    setData({})
-  }
   return (
     <div className={loginContainer}>
       <div className={form}>
         <div className={thumbnail}></div>
         <form className={loginForm} onSubmit={(e) => e.preventDefault()}>
-          {createInput(
-            "text",
-            "user name",
-            inputDataHandler(setData,data, "username"),
-            inputValue(data, "username")
+          {formToggle ? (
+            <input
+              type="text"
+              placeholder="user name"
+              value={inputData.username || ''}
+              onChange={inputGetValue(setInputData, inputData, "username")}
+            />
+          ) : (
+            ""
           )}
+
           <input
             type="email"
             placeholder="Email"
-            onChange={inputDataHandler(setData, data, "email")}
-            value={inputValue(data, "email")}
+            value={inputData.email || ''}
+            onChange={inputGetValue(setInputData, inputData, "email")}
           />
           <input
             type="password"
             placeholder="Password"
-            onChange={inputDataHandler(setData, data, "password")}
-            value={inputValue(data, "password")}
+            value={inputData.password || ''}
+            onChange={inputGetValue(setInputData, inputData, "password")}
           />
-          <button onClick={sendRequest}>
-            {!formToggle ? "Войти" : "Зарегистрироваться"}
-          </button>
+
+          <button onClick={sendButtonHandler}>{formToggle ? "Зарегистрироваться" : "Войти"}</button>
+
           <p className={message}>
             {!formToggle ? "Нет аккаунта ?" : "Есть аккаунт ?"}
-            <button onClick={switchButtonHandler}>{!formToggle ? "Зарегистрироваться" : "Войти"}</button>
+            <button onClick={toggleFormButtonHandler}> {!formToggle ? "Зарегистрироваться" : "Войти"}</button>
           </p>
         </form>
       </div>

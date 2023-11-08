@@ -5,40 +5,10 @@ import Discussion from "./Discussion";
 import HeaderChat from "./HeaderChat";
 import Message from "./Message";
 import SendMessageIcon from "./SvgSengMessageIcon";
-import { useEffect, useState } from "react";
+// import { useEffect,  useState } from "react";
 const Messenger = () => {
-  const [permission, setPermisson] = useState(false);
-  useEffect(() => {
-    
-    (async () => {
-      // const createWsConection = async (url) => {
-      //   const ws = new WebSocket(url)
-      //   ws.onopen = () => ws.send(`ok `)
-      // }
-      // await createWsConection('ws://localhost:9091/')
-      try {
-        const response =  await fetch("http://localhost:9090/messenger", {
-          method: "get",
-          headers: {
-            Authorization: `bearer ${
-              JSON.parse(localStorage.getItem("jwt")).jwt
-            }`,
-          },
-        });
-        const {userAuthorized} = await response.json()
-        if (userAuthorized) {
-          return setPermisson(true);
-        }
-        if (!userAuthorized) {
-          return setPermisson(false);
-        }
-      } catch (e) {
-        console.log(e.message);
-      }
-    })();
-  }, [permission]);
-
-  if (permission) {
+  
+  // if (permission) {
     return (
       <div className="body">
         <div className="container">
@@ -63,7 +33,7 @@ const Messenger = () => {
                   type="text"
                   className="write-message"
                   placeholder="Type your message here"
-                ></input>
+                />
                 <i className="icon send clickable">
                   <SendMessageIcon />
                 </i>
@@ -74,14 +44,14 @@ const Messenger = () => {
       </div>
     );
   }
-  if (!permission) {
-    return (
-      <>
-        <h1>Permission denied</h1>
-        <a href="/">Авторизируйтесь для продолжения работы!</a>
-      </>
-    );
-  }
-};
+  // if (!permission) {
+  //   return (
+  //     <>
+  //       <h1>Permission denied</h1>
+  //       <a href="/">Авторизируйтесь для продолжения работы!</a>
+  //     </>
+  //   );
+  // }
+// };
 
 export default Messenger;

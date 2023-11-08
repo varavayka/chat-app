@@ -14,12 +14,13 @@ const registrationHandler = async (req, res) => {
       await findDoc({ email }),
       await preparationCandidate({ ...other, email }, 256)
     );
-
-    if (registrationStatus) {
-      return res.status(200).json({ registrationStatus });
-    }
-    if (!registrationStatus) {
-      return res.status(401).json({ registrationStatus });
+    switch(true) {
+      case registrationStatus:
+        return res.status(200).json({ registrationStatus })
+      case !registrationStatus:
+        return res.status(401).json({ registrationStatus });
+      default:
+        return res.status(401).json({ registrationStatus });
     }
   } catch (e) {
     console.log(e.message);
