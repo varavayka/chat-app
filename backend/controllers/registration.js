@@ -16,9 +16,9 @@ const registrationHandler = async (req, res) => {
     );
     switch(true) {
       case registrationStatus:
-        return res.status(200).json({ registrationStatus })
+        return res.status(200).json({ registrationStatus, resultFind:false })
       case !registrationStatus:
-        return res.status(401).json({ registrationStatus });
+        return res.status(401).json({ registrationStatus, resultFind:true });
       default:
         return res.status(401).json({ registrationStatus });
     }

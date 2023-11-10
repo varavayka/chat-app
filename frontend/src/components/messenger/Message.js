@@ -1,6 +1,6 @@
 import styles from "./css/message.module.css";
 
-const Message = ({ responseAllow }) => {
+const Message = ({ responseAllow, text }) => {
   const { message, photo, online, response, textOnly } = styles;
   return (
     <div className={`${message} ${responseAllow ? textOnly : ""}`}>
@@ -8,8 +8,9 @@ const Message = ({ responseAllow }) => {
         <div className={online}></div>
       </div>
       <div className={responseAllow ? response : ""}>
-        <p className="text"> Hi, how are you ? </p>
+        <p className="text"> {text} </p>
       </div>
+      
     </div>
   );
 };

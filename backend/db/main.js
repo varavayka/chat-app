@@ -33,10 +33,10 @@ const registration = async (resultFind, preparationCandidate) => {
   try {
     if(!resultFind) {
       await addUser(preparationCandidate)
-      return { registrationStatus: true}
+      return { registrationStatus: true , resultFind}
     }
     if(resultFind) {
-      return { registrationStatus: false};
+      return { registrationStatus: false,resultFind};
     }
   } catch(e) {
     console.log(e.message)
@@ -47,11 +47,11 @@ const authentication = async (resultFind, requestPassword) => {
   try {
     
     if(resultFind) {
-      const {salt,password,uuid,email} = resultFind
+      const {salt,password,uuid,email, username} = resultFind
       const computedHash = await hashPass(requestPassword, null, true, salt)
       
       if(computedHash === password) {
-        const { jwt, secret } = await signToken({uuid,email}, (await secretKey(256)),  "1h")
+        const { jwt, secret } = await signToken({uuid,email,username}, (await secretKey(256)),  "1h")
         await updateUserData({ jwt, secretJwt:secret }, {email});
         return { userAuthenticated: true, jwt, resultFindUser: true}
       }
