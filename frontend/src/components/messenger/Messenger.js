@@ -9,6 +9,7 @@ import Message from "./Message";
 import SendMessageIcon from "./SvgSengMessageIcon";
 import PermissionDenied from "../PermissonDenied";
 import httpAuthorization from "../../httpRequests/httpAuthorization";
+import {EventEmitter} from 'events'
 import inputHandler from "../../handlers/inputHandler";
 import buttonHandler from "../../handlers/buttonHandler";
 const Messenger = () => {
@@ -17,43 +18,32 @@ const Messenger = () => {
     const [onlineStatus,setOnlineStats] = useState(false)
     const [inputValue,setInputValue] = useState({})
     const [messages, setMessages] = useState([])
-    // const [onTransferingData, setOnTransferingData] = useState(false)
     const ws = useRef(null)
+    useEffect(() => {
+       ws.current = new WebSocket('ws://localhost:8081/')
+  
+       return () => ws.current.close()
+    },[])
+  
+  
+    useEffect(() => {
+      ws.current.onmessage = ({data}) => {
+        
+        setMessages([...messages, JSON.parse(data)])
+      }
+    }, [messages])
+    
+    function sendMessage(inputValue) {
+      if(inputValue)
+      ws.current.send(JSON.stringify(inputValue))
+    }
+    // const [onTransferingData, setOnTransferingData] = useState(false)
+    
   // const wrapperListMessage = (data) => setMessages([...messages, data])
   // useEffect(() => wsClient(inputValue, allowSend, setOnlineStats, setMessages, messages), [allowSend])
-    useEffect(() => {
-      ws.current = new WebSocket('ws://localhost:8081')
-      
-        ws.current.onopen = (socket) => {
-          ws.current.send(JSON.stringify(inputValue))
-        };
-        test(ws, inputValue)
-        
-        handlerWs()
-      
-
-    }, [])
     
-    const test = useCallback((ws, data) => {
-      
-      
-        setInterval(() => {
-          ws.current.send(JSON.stringify(data))
-          
-        }, 2000);
-        
-    }, [allowSend])
-
-    const handlerWs = useCallback(() => {
-      ws.current.onmessage = ({ data }) => {  
-        // const {userId} = JSON.parse(data)
-        // messagesHandler([...messages, JSON.parse(data)]);
-        setMessages([...messages, JSON.parse(data)])
-      };
-    },[])
-
     
-
+  
     // useEffect(() => {
     //   async function authorization() {
     //     const dataRequest = {
@@ -82,8 +72,10 @@ const Messenger = () => {
               <HeaderChat />
               <div className="messages-chat">
                
-                {!messages.length ? '' : messages.map(({message, date}) => {
+                {!messages.length ? '' : messages.map(({message, date,userId}) => {
+                  
                   return (<div key={v4()}>
+                    <p className="time">{userId}</p>
                     <Message text={message}/>
                     <p className="time"> {date}</p>
                     </div>)
@@ -91,7 +83,10 @@ const Messenger = () => {
               </div>
               <div className="footer-chat">
                 <input type="text"className="write-message"placeholder="Type your message here" onChange={inputHandler(setInputValue,inputValue, 'message')}/>
-                <i className="icon send clickable" onClick={buttonHandler(setAllowSend,allowSend,false, true, () => {})}><SendMessageIcon /></i>
+                <i className="icon send clickable" onClick={buttonHandler(setAllowSend,allowSend,false, true, () => {
+                  sendMessage(inputValue)
+                } )}><SendMessageIcon /></i>
+                {/* onClick={buttonHandler(setAllowSend,allowSend,false, true, () => {} )} */}
                 {/* forwardAllowSend, forwardData, inputValue, () => console.log(listMessages) */}
               </div>
             </section>

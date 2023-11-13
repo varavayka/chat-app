@@ -1,28 +1,26 @@
 const {WebSocketServer} = require('ws')
 const {v4:uuid} = require('uuid')
-
+const {EventEmitter} = require('events')
 const ws = new WebSocketServer({port:8081})
-const socketCache = new Set();
+const e = new EventEmitter()
 function wsSerever() {
-  ws.on("connection", (socket) => {
-    // console.log('веб сокет сервер работает ')
-    
-    socket.id = uuid()
-    socketCache.add(socket);
-    console.log(`${socketCache.size} - количество сокетов     идентификарторы сокетов - ${socket.id}`)
-      socket.on("message", (buffer) => {
-        const date = `${new Date(Date.now())}`.split(' ').slice(0,5).join(' ')
-        const message = {...JSON.parse(buffer), date, userId: socket.id}
-        console.log(message)
-        socketCache.forEach((client) => {
-          client.send(JSON.stringify(message));
-        });
-      });
+  const tempStorageSession = new Set()
+
+  ws.on('connection', socket => {
+      socket.id = uuid()
+      tempStorageSession.add(socket)
+      console.log(`${tempStorageSession.size} - количество сокетов     идентификарторы сокетов - ${socket.id}`)
+      socket.on('message', buffer => {
+          const date = `${new Date(Date.now())}`.split(' ').slice(0,5).join(' ')
+          const message = {...JSON.parse(buffer), date, userId: socket.id}
+          console.log(message)
+          tempStorageSession.forEach(socket => socket.send(JSON.stringify(message)))
+      })
       socket.on("close", () => {
-        socketCache.delete(socket);
-        console.log("сокет закрыт");
+          tempStorageSession.delete(socket);
+          console.log("сокет закрыт");
       });
-    });
+  }) 
 }
 wsSerever()
 // module.exports = wsSerever
