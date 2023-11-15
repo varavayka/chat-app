@@ -1,12 +1,13 @@
 import styles from "./css/headerChat.module.css";
-const HeaderChat = () => {
-  const { headerChat, icon, name, clickable, right } = styles;
+const HeaderChat = ({onlineStatus}) => {
+  const { headerChat, icon, name, clickable, right, online, offline } = styles;
   const {username} = JSON.parse(atob(localStorage.getItem('jwt').split('.')[1]))
   
   return (
     <div className={headerChat}>
-      <i className={icon}></i>
       <p className={name}>{username}</p>
+      <p className={onlineStatus ? online : offline}></p>
+      <i className={icon}></i>
       <i className={`${icon} ${clickable}  ${right}`}></i>
     </div>
   );

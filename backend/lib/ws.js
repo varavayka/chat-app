@@ -12,15 +12,27 @@ function wsSerever() {
       console.log(`${tempStorageSession.size} - количество сокетов     идентификарторы сокетов - ${socket.id}`)
       socket.on('message', buffer => {
           const date = `${new Date(Date.now())}`.split(' ').slice(0,5).join(' ')
-          const message = {...JSON.parse(buffer), date, userId: socket.id}
-          console.log(message)
-          tempStorageSession.forEach(socket => socket.send(JSON.stringify(message)))
+          const messageTEmp = {...JSON.parse(buffer), date, userId: socket.id}
+          
+          tempStorageSession.forEach(socket => {
+              const {userId, message} = messageTEmp
+              const msg = checkID(socket.id, userId, message)
+              socket.send(JSON.stringify({...msg, date}))
+              console.log(msg)
+        })
       })
       socket.on("close", () => {
+        
           tempStorageSession.delete(socket);
           console.log("сокет закрыт");
       });
   }) 
 }
 wsSerever()
-// module.exports = wsSerever
+// module.exports = wsSerever   
+
+
+function checkID(socketId, messageId, message) {
+    return {socketId,messageId, result: socketId === messageId, message}
+
+}

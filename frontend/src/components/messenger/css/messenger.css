@@ -122,3 +122,12 @@
 .clickable {
   cursor: pointer;
 }
+
+
+.right {
+  float:right
+}
+
+.left {
+  float:left
+}

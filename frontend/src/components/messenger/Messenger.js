@@ -20,44 +20,38 @@ const Messenger = () => {
     const [messages, setMessages] = useState([])
     const ws = useRef(null)
     useEffect(() => {
-       ws.current = new WebSocket('ws://localhost:8081/')
-  
-       return () => ws.current.close()
+      ws.current = new WebSocket('ws://localhost:8081/')
+      ws.current.onopen = (({target:{readyState}}) => setOnlineStats(true))            
+      return () =>  ws.current.close()
     },[])
-  
-  
+    
     useEffect(() => {
       ws.current.onmessage = ({data}) => {
-        
-        setMessages([...messages, JSON.parse(data)])
+        const message = JSON.parse(data)
+        // const {userId} = message
+        setMessages([...messages, message])
       }
     }, [messages])
-    
+     
     function sendMessage(inputValue) {
       if(inputValue)
       ws.current.send(JSON.stringify(inputValue))
     }
-    // const [onTransferingData, setOnTransferingData] = useState(false)
-    
-  // const wrapperListMessage = (data) => setMessages([...messages, data])
-  // useEffect(() => wsClient(inputValue, allowSend, setOnlineStats, setMessages, messages), [allowSend])
-    
-    
   
-    // useEffect(() => {
-    //   async function authorization() {
-    //     const dataRequest = {
-    //       headers: {'Authorization': `bearer ${localStorage.getItem('jwt')}`},
-    //       method:'GET'
-    //     }
-    //     const authorizationStatus =  await httpAuthorization('http://localhost:9090/messenger',dataRequest)
-    //     return setPermission(authorizationStatus)
+    useEffect(() => {
+      async function authorization() {
+        const dataRequest = {
+          headers: {'Authorization': `bearer ${localStorage.getItem('jwt')}`},
+          method:'GET'
+        }
+        const authorizationStatus =  await httpAuthorization('http://localhost:9090/messenger',dataRequest)
+        return setPermission(authorizationStatus)
         
-    //   }
-    //   authorization()
-    // }, [permission])
+      }
+      authorization()
+    }, [permission])
     return (
-      // !permission ? <PermissionDenied/> :
+      !permission ? <PermissionDenied/> :
       <div className="body">
         <div className="container">
           <div className="row">
@@ -65,29 +59,30 @@ const Messenger = () => {
             <section className="discussions">
               <SearchBar />
               <Discussion msg={inputValue}/>
-              {/* <button onClick={() => setOnTransferingData(true)}>ON</button> */}
             </section>
 
             <section className="chat">
-              <HeaderChat />
+              <HeaderChat  onlineStatus={onlineStatus}/>
               <div className="messages-chat">
                
-                {!messages.length ? '' : messages.map(({message, date,userId}) => {
-                  
-                  return (<div key={v4()}>
-                    <p className="time">{userId}</p>
-                    <Message text={message}/>
+                {!messages.length ? '' : messages.map(({message, date,messageId, result}) => {
+
+                  return (
+                  <div key={v4()} className={result ? 'right' : 'left' }>
+                    <Message text={message} result={result}  >
+                    <p className="time">{messageId}</p>
                     <p className="time"> {date}</p>
+                    </Message>
                     </div>)
                 })}
               </div>
               <div className="footer-chat">
-                <input type="text"className="write-message"placeholder="Type your message here" onChange={inputHandler(setInputValue,inputValue, 'message')}/>
+                <input onKeyDown={({key}) => key=== 'Enter' ? sendMessage(inputValue): ''} type="text"className="write-message"placeholder="Type your message here" onChange={inputHandler(setInputValue,inputValue, 'message')} value={inputValue.message || ''}/>
                 <i className="icon send clickable" onClick={buttonHandler(setAllowSend,allowSend,false, true, () => {
                   sendMessage(inputValue)
+                  setInputValue({})
                 } )}><SendMessageIcon /></i>
-                {/* onClick={buttonHandler(setAllowSend,allowSend,false, true, () => {} )} */}
-                {/* forwardAllowSend, forwardData, inputValue, () => console.log(listMessages) */}
+
               </div>
             </section>
           </div>
@@ -100,24 +95,4 @@ const Messenger = () => {
 export default Messenger;
 
 
-// const ws = new WebSocket('ws://localhost:8081')
-// function wsClient(inputValue, allowSend, setAllowSend, setMessages, messages) {
-      
-//   console.log('ok')
-//   ws.onopen = (socket) => {
-//     if(allowSend) {
-//       ws.send(JSON.stringify({message:inputValue}))
-      
-//       // ws.current.send(JSON.stringify(inputValue));
-//       setAllowSend(false)
-//       // setOnTransferingData(false)
-//     }
-//   };
-//   ws.onmessage = ({ data }) => {
-//     console.log(data)
-//     // const {userId} = JSON.parse(data)
-//     // messagesHandler([...messages, JSON.parse(data)]);
-//     setMessages([...messages, JSON.parse(data)])
-//   };
 
-// }

@@ -3,6 +3,9 @@
   align-items: center;
   margin-bottom: 8px;
 }
+.red {
+  color: red
+}
 
 .message .photo {
   display: block;
@@ -25,6 +28,7 @@
   float: right;
   margin-right: 0px !important;
   margin-left: auto; /* flexbox alignment rule */
+  color: red;
 }
 
 .response .text {
