@@ -49,7 +49,12 @@ const Login = () => {
         <form className={loginForm} onSubmit={(e) => e.preventDefault()}>
           {
             !formToggle ? 
+            <>
             <input type="text" placeholder="user name" onChange={inputHadler(setInputValue,inputValue,'username')}/>
+            <input type="text" placeholder="short name" onChange={inputHadler(setInputValue,inputValue,'shortname')}/>
+
+            </>
+            
             : ''
           }
           <input type="email" placeholder="Email" onChange={inputHadler(setInputValue,inputValue,'email')}/>

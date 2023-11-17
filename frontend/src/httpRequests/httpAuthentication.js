@@ -4,7 +4,7 @@ async function authentication(url, {body,headers,method}, navigate, navigateUrl)
         const {jwt, userAuthenticated} = await (await fetch(url,{body,headers,method} )).json()
         
         if(userAuthenticated) {
-            localStorage.setItem('jwt', jwt)
+            sessionStorage.setItem('jwt', jwt)
             navigate(navigateUrl)
             return {userAuthenticated, message: 'Пользователь аутентифицирован'}
         }

@@ -1,6 +1,6 @@
 
 
-const buttonHandler  = (setState,state,  toggleMode, newState=null, debuggCb) => {
+const buttonHandler  = (setState,state,  toggleMode, newState=null, debuggCb=null) => {
     // forward=null, forwardData, data, debuggCb
     if(toggleMode ) {
         return (e) =>  !state ? setState(!state) : setState(!state)
@@ -10,7 +10,10 @@ const buttonHandler  = (setState,state,  toggleMode, newState=null, debuggCb) =>
         // if(forward)
         // forward(newState)
         // forwardData(data) 
-        debuggCb()
+        if(debuggCb) {
+
+            debuggCb()
+        }
     }
 }
 export default buttonHandler

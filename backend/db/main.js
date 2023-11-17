@@ -19,10 +19,10 @@ const logOut = async (token) => {
   return {logout:false, tokenFound: false}
   
 }
-const preparationCandidate = async ({password,email,username},  saltSize) => {
+const preparationCandidate = async ({password,email,username,shortname},  saltSize) => {
   try {
     const {hash,salt} = await hashPass(password, saltSize)
-    return {email,password:hash, salt, username} 
+    return {email,password:hash, salt, username, shortname} 
 
   }catch(e) {
     console.log(e.message)
@@ -47,11 +47,12 @@ const authentication = async (resultFind, requestPassword) => {
   try {
     
     if(resultFind) {
-      const {salt,password,uuid,email, username} = resultFind
+      const {salt,password,_id,email, username} = resultFind
+      
       const computedHash = await hashPass(requestPassword, null, true, salt)
       
       if(computedHash === password) {
-        const { jwt, secret } = await signToken({uuid,email,username}, (await secretKey(256)),  "1h")
+        const { jwt, secret } = await signToken({id:JSON.stringify(_id),email,username}, (await secretKey(256)),  "1h")
         await updateUserData({ jwt, secretJwt:secret }, {email});
         return { userAuthenticated: true, jwt, resultFindUser: true}
       }
