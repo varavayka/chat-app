@@ -6,33 +6,46 @@ const requestDb = require('../db/main')()
 const { verifyJwt } = require("./generateJwt");
 const modificateReport = require('./test')
 const e = new EventEmitter()
-
-
-
-
+const globalEventEmitter = require('../lib/eventEmitter')
+const messageDate = (fromParams, toParams) => `${new Date(Date.now())}`.split(' ').slice(fromParams,toParams).join(' ')
 
 async function wsSerever() {
   const socketStorage = new Set()
+  const authentificatedUser = new Set()
   const {checkToken, findDoc} = await requestDb
   ws.on('connection', socket => {
-      
+    globalEventEmitter.once('getId', async (id) => {
+      const {shortname} = await checkToken(await findDoc({jwt:id}))
+      authentificatedUser.add(shortname)
+    })
+    authentificatedUser.forEach(id => {
+      socket.room = id
+    })
     socket.id = uuid()
     socketStorage.add(socket)
-    modificateReport(`Количество сокетов -> ${socketStorage.size}\nИдентификарторы сокетов -> ${socket.id}`)
+    modificateReport(`Количество сокетов -> ${socketStorage.size}\nИдентификартор сокетов -> ${socket.id}\nИдентификатор комнаты -> ${socket.room}`)
+
     socket.on('message', async buffer => {
+      
       const date = messageDate(0, 5)
+      const {id,room} = socket
+      const message = {...JSON.parse(buffer), date, id, room}
+      
+      const status = await authorization(message.token, {checkToken, findDoc}, verifyJwt,socket)
 
-      const {type,token, message, userId, room} = {...JSON.parse(buffer), date, userId: socket.id}
-      const initBroadcastMessegesHandler = broadcastMessages(socketStorage)
-      const msg = !message ? null : checkID(socket.id, userId, message)
-      const status = await authorization(token, {checkToken, findDoc}, verifyJwt,socket)
+      const broadcast = publicSendingOfMessages(socketStorage)
+      switch(message.type) {
+        case 'message':
+          broadcast(message.type,{...message, status})
+          e.emit(message.type)
+          break
+        case 'authentication':
+          broadcast(message.type,{type:message.type, status})
+          e.emit(message.type)
+          break
 
-      if(msg) {
-        console.log(JSON.parse(buffer))
-        initBroadcastMessegesHandler('message', {...msg, date , status, type})
       }
-        initBroadcastMessegesHandler('authorization', {type, date , status}, userId)
-      e.emit(type)
+      
     })
 
 
@@ -47,13 +60,13 @@ async function wsSerever() {
 // wsSerever()
 module.exports = wsSerever   
 
-
-function checkID(socketId, messageId, message) {
-    return {socketId,messageId, result: socketId === messageId, message}
+function publicSendingOfMessages(wsSessionList) {
+  return (event, broadcastMessage) => 
+  wsSessionList.forEach((session) => {
+    e.once(event, () => session.send(JSON.stringify(broadcastMessage)))
+  })
 
 }
-
-
 
 async function authorization(token, db, verifyJwt) {
     const {findDoc, checkToken} = await db
@@ -76,12 +89,5 @@ async function authorization(token, db, verifyJwt) {
 
 }
 
-const messageDate = (fromParams, toParams) => `${new Date(Date.now())}`.split(' ').slice(fromParams,toParams).join(' ')
 
-function broadcastMessages(wsSessionList) {
-  return (event, broadcastMessage) => 
-  wsSessionList.forEach((session) => {
-    e.once(event, () => session.send(JSON.stringify(broadcastMessage)))
-  })
 
-}

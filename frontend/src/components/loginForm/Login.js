@@ -9,7 +9,7 @@ const Login = () => {
   const { loginContainer, form, thumbnail, loginForm, message } = styles;
   const [formToggle,setFormToggle] = useState(false)
   const [allowRequest,setAllowRequest] = useState(false)
-  const [inputValue,setInputValue] = useState({})
+  const [inputValue,setInputValue] = useState({email:'konevski2012@gmail.com', password:'FSociety420'})
   const navigate = useNavigate()
   useEffect(() => {
     async function login() { 
@@ -57,7 +57,7 @@ const Login = () => {
             
             : ''
           }
-          <input type="email" placeholder="Email" onChange={inputHadler(setInputValue,inputValue,'email')}/>
+          <input type="email" placeholder="Email" onChange={inputHadler(setInputValue,inputValue,'email')} />
           <input type="password" placeholder="Password" onChange={inputHadler(setInputValue,inputValue,'password')}/>
 
           <button onClick={buttonHandler(setAllowRequest,allowRequest,false,true)} > {formToggle ? "Войти" : "Зарегистрироваться"}</button>
