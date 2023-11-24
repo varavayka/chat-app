@@ -2,7 +2,6 @@ import styles from "./css/message.module.css";
 
 const Message = ({ responseAllow, text, children, key}) => {
   const { message, photo, online, response, textOnly } = styles;
-  console.log(children)
   return (
     
     <div className={`${message} ${responseAllow ? textOnly : ""}`}>

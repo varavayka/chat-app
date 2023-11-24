@@ -4,41 +4,44 @@ const {EventEmitter} = require('events')
 const ws = new WebSocketServer({port:8081})
 const requestDb = require('../db/main')()
 const { verifyJwt } = require("./generateJwt");
-
+const modificateReport = require('./test')
 const e = new EventEmitter()
+
+
+
+
+
 async function wsSerever() {
-  const tempStorageSession = new Set()
+  const socketStorage = new Set()
   const {checkToken, findDoc} = await requestDb
   ws.on('connection', socket => {
       
-      socket.id = uuid()
-      tempStorageSession.add(socket)
-      console.log(`${tempStorageSession.size} - количество сокетов     идентификарторы сокетов - ${socket.id}`)
+    socket.id = uuid()
+    socketStorage.add(socket)
+    modificateReport(`Количество сокетов -> ${socketStorage.size}\nИдентификарторы сокетов -> ${socket.id}`)
+    socket.on('message', async buffer => {
+      const date = messageDate(0, 5)
 
-      socket.on('message', buffer => {
-          const date = `${new Date(Date.now())}`.split(' ').slice(0,5).join(' ')
-        //   const messageTEmp = {...JSON.parse(buffer), date, userId: socket.id}
-          const {type,token, message, userId} = {...JSON.parse(buffer), date, userId: socket.id}
+      const {type,token, message, userId, room} = {...JSON.parse(buffer), date, userId: socket.id}
+      const initBroadcastMessegesHandler = broadcastMessages(socketStorage)
+      const msg = !message ? null : checkID(socket.id, userId, message)
+      const status = await authorization(token, {checkToken, findDoc}, verifyJwt,socket)
 
-          tempStorageSession.forEach(async socket => {
-            // const {userId, message,type} = messageTEmp
-            const msg = checkID(socket.id, userId, message,type)
-            if(type=== 'message') {
-                socket.send(JSON.stringify({...msg, date,type:'message'}))
-                console.log(msg)
-            }
-            if(type === 'authorization') {
-                return  socket.send(JSON.stringify({type:'authorization', status: await authorization(token, {checkToken, findDoc}, verifyJwt,socket)}))
-               
-            }
+      if(msg) {
+        console.log(JSON.parse(buffer))
+        initBroadcastMessegesHandler('message', {...msg, date , status, type})
+      }
+        initBroadcastMessegesHandler('authorization', {type, date , status}, userId)
+      e.emit(type)
+    })
 
-        })
-        
-      })
-      socket.on("close", () => {
-        tempStorageSession.delete(socket);
-        console.log("сокет закрыт");
-      });
+
+    socket.on("close", () => {
+      socketStorage.delete(socket);
+      modificateReport("сокет закрыт")
+    });
+
+
   }) 
 }
 // wsSerever()
@@ -52,14 +55,11 @@ function checkID(socketId, messageId, message) {
 
 
 
-
-
-
-
 async function authorization(token, db, verifyJwt) {
     const {findDoc, checkToken} = await db
     const { tokenFound, secretJwt } = await checkToken(await findDoc({jwt:token}))
     
+
     if (tokenFound) {
       const {authorized} = await verifyJwt(token, secretJwt);
       if (authorized) {
@@ -68,5 +68,20 @@ async function authorization(token, db, verifyJwt) {
       if (!authorized) {
         return  {authorized:false}
       }
+      return 
     }
+    if(!tokenFound) {
+      return  {authorized:false}
+    }
+
+}
+
+const messageDate = (fromParams, toParams) => `${new Date(Date.now())}`.split(' ').slice(fromParams,toParams).join(' ')
+
+function broadcastMessages(wsSessionList) {
+  return (event, broadcastMessage) => 
+  wsSessionList.forEach((session) => {
+    e.once(event, () => session.send(JSON.stringify(broadcastMessage)))
+  })
+
 }

@@ -8,7 +8,6 @@ import HeaderChat from "./HeaderChat";
 import Message from "./Message";
 import SendMessageIcon from "./SvgSengMessageIcon";
 import PermissionDenied from "../PermissonDenied";
-import httpAuthorization from "../../httpRequests/httpAuthorization";
 // import {EventEmitter} from 'events'
 import inputHandler from "../../handlers/inputHandler";
 import buttonHandler from "../../handlers/buttonHandler";
@@ -19,23 +18,11 @@ const Messenger = () => {
   const [inputValue, setInputValue] = useState({});
   const [messages, setMessages] = useState([]);
   const ws = useRef(null);
-  
   useEffect(() => {
+    
     ws.current = new WebSocket("ws://localhost:8081");
     ws.current.onopen = ({ target: { readyState } }) => {
       ws.current.send(JSON.stringify({type:'authorization', token:sessionStorage.getItem('jwt')}))
-      ws.current.onmessage = ({data}) => {
-        const {type,status} = JSON.parse(data)
-          
-          if(type === 'authorization') {
-            if(!status.authorized) {
-              ws.current.close()
-              return setPermission(status.authorized)
-            }
-            return setPermission(status.authorized)
-          }
-        
-      }
       return readyState ? setOnlineStats(true) : setOnlineStats(false);
 
     }
@@ -45,38 +32,26 @@ const Messenger = () => {
 
   useEffect(() => {
     ws.current.onmessage = ({ data }) => {
-      
-      const message = JSON.parse(data);
-      // console.log(message)
-      // const {userId} = message
+      const message = JSON.parse(data)
+      if(message.type === 'authorization') {
+        if(!(message.status).authorized) {
+          ws.current.close()
+          return setPermission((message.status).authorized)
+        }
+        return setPermission((message.status).authorized)
+      }
       if(message.type === 'message') {
-        console.log(message)
-        setMessages([...messages, message]);
-
+        messages.forEach(({result, status:{authorized}}) => result && !authorized ?setPermission(authorized) :  setPermission(authorized))
+        return setMessages([...messages, message]);
+        
       }
     };
   }, [messages]);
   
 
   function sendMessage(inputValue) {
-    if (inputValue) ws.current.send(JSON.stringify({...inputValue, type:'message'}));
+    if (inputValue) ws.current.send(JSON.stringify({...inputValue, type:'message', token:sessionStorage.getItem('jwt')}));
   }
-
-  // useEffect(() => {
-  //   async function authorization() {
-  //     const dataRequest = {
-  //       headers: { Authorization: `bearer ${sessionStorage.getItem("jwt")}` },
-  //       method: "GET",
-  //     };
-  //     const authorizationStatus = await httpAuthorization(
-  //       "http://localhost:9090/messenger",
-  //       dataRequest
-  //     );
-  //     return setPermission(authorizationStatus);
-  //   }
-  //   authorization();
-  // }, [permission]);
-
   return !permission ? (
     <PermissionDenied />
   ) : (
@@ -85,7 +60,7 @@ const Messenger = () => {
         <div className="row">
           <Menu />
           <section className="discussions">
-            <SearchBar />
+            <SearchBar/>
             <Discussion />
           </section>
 

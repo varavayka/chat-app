@@ -1,6 +1,7 @@
 
-const messengerHandler = (req, res) => {
-  return res.status(200).json({authorization:true, message:'success'})
+const messengerHandler = async (req, res) => {
+  console.log(req)
+  await wsSerever()
 }
 
 module.exports = messengerHandler;

@@ -9,7 +9,11 @@ const findDoc = async (pattern) => await userModel.findOne(pattern)
 const addUser = async (user) =>  await userModel.create(user)
 const updateUserData = async ( newData, pattern) => await userModel.updateOne(pattern, { $set: newData })
 const checkToken = async (findDoc) => {
-  return !findDoc ? { tokenFound: false } : { tokenFound: true, secretJwt:findDoc.secretJwt }
+  if(findDoc) {
+    const { secretJwt,username, shortname} = findDoc
+    return {tokenFound: true,secretJwt,username, shortname}
+  }
+  return { tokenFound: false }
 }
 const logOut = async (token) => {
   if(await findDoc({jwt:token})) {

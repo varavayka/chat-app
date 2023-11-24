@@ -8,11 +8,12 @@ const logoutRoute = require('./route/logout')
 const validator = require("../middleware/validator");
 
 const authorization = require("../middleware/authorization");
+const wsServer = require('../lib/ws')
 const router = Router();
 
 router.use("/", /*[(data) => console.log(data)] таким образом можно записывать middleware*/ rootRoute);
 // router.use("/api/authorization", authorization, accountRoute);
-router.use("/messenger", authorization, messengerRoute);
+// router.use("/messenger", authorization, messengerRoute);
 router.use("/authentication", authenticationRoute);
 router.use("/registration", validator, registrationRoute);
 router.use('/logout', logoutRoute)
