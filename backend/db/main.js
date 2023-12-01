@@ -8,7 +8,9 @@ const { secretKey, signToken } = require("../lib/generateJwt");
 const findDoc = async (pattern) => await userModel.findOne(pattern)
 const addUser = async (user) =>  await userModel.create(user)
 const updateUserData = async ( newData, pattern) => await userModel.updateOne(pattern, { $set: newData })
+
 const checkToken = async (findDoc) => {
+
   if(findDoc) {
     const { secretJwt,username, shortname} = findDoc
     return {tokenFound: true,secretJwt,username, shortname}
@@ -16,6 +18,7 @@ const checkToken = async (findDoc) => {
   return { tokenFound: false }
 }
 const logOut = async (token) => {
+
   if(await findDoc({jwt:token})) {
     await updateUserData({jwt: ''},{jwt: token})
     return {logout: true, tokenFound: true}
@@ -24,6 +27,7 @@ const logOut = async (token) => {
   
 }
 const preparationCandidate = async ({password,email,username,shortname},  saltSize) => {
+  
   try {
     const {hash,salt} = await hashPass(password, saltSize)
     return {email,password:hash, salt, username, shortname} 
