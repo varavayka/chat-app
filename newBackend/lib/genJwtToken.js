@@ -12,9 +12,9 @@ class Token {
   }
 
   generateJwtToken(tokenLifeTime, secret = null) {
-    const optionalData = !this.dataForSign
+    const optionalData = !this.data
       ? { data: "не указана" }
-      : this.dataForSign;
+      : this.data;
     const secretKey = !this.secret ? secret : this.secret;
     try {
       const token = sign(optionalData, secretKey, { expiresIn:tokenLifeTime });
