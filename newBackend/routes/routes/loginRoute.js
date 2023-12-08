@@ -1,9 +1,9 @@
 const {Router} = require('express')
-const rootController = require('../../controllers/rootController')
+const loginController = require('../../controllers/loginController')
 const route = Router()
 
 
-route.get('/', rootController)
+route.post('/:loginMethod', loginController)
 
 
 module.exports = route

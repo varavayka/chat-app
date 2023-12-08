@@ -5,124 +5,89 @@ const GenJwtToken = require("../lib/genJwtToken");
 const passwordHashing = require("../lib/passwordHashing");
 const userModel = require("../models/UserModel");
 const { connect } = require("mongoose");
-const apiRequestManagement = new EventEmitter();
+const apiRequestManagement = new EventEmitter()
+connect(process.env.MONGO_URL)
+// .then(({conncet}) => {
 
-apiRequestManagement.on("registration", async ({email, password, otherKeys}, callback) => {
-  try {
-    const { connection } = await connect(process.env.MONGO_URL);
-    const userFound = await userModel.findOne({email});
-    if (!userFound) {
-      const { hash, secret } = await passwordHashing(password, 256, "sha256");
-      const registrationResult = await userModel.create({...otherKeys, password:hash(), userId:uuid() , secret, email});
-      await connection.close();
-      return callback({userFound:!!userFound, registrationStatus: !!registrationResult,});
+  const validateToken = async (token,callback=null) => {
+    
+    const initValidationToken = new GenJwtToken()
+    const tokenFind = await userModel.findOne({token})
+    
+    if(tokenFind) {
+      const {secret} = tokenFind
+      
+      const validationResult  = initValidationToken.tokenVerification(token,secret)
+      if(!callback) return {...validationResult, tokenFind:!!tokenFind}
+      return callback({...validationResult, tokenFind:!!tokenFind})
     }
-    await connection.close();
-    return callback({ userFound: !!userFound, registrationStatus: false });
-  } catch (e) {
-    return callback({ userFound: false, registrationStatus: false, error: e });
+    if(!callback) return {tokenFind: !!tokenFind}
+    return callback({tokenFind: !!tokenFind})
   }
-});
-
-apiRequestManagement.on(
-  "authentication",
-  async ({ email, password }, callback) => {
+  
+  
+  const logOut = async (token,callback) => {
     try {
-      const { connection } = await connect(process.env.MONGO_URL);
-      const checkUserDb = await userModel.findOne({ email });
-      if (checkUserDb) {
-        const {
-          secret,
-          password: passwordDbUser,
-          username,
-          shortname,
-        } = checkUserDb;
-        const { hash } = await passwordHashing(password, 256, "sha256");
-        const hashingRequestPassword = hash(secret);
 
-        if (hashingRequestPassword === passwordDbUser) {
-          const initGenerateToken = new GenJwtToken({
-            email,
-            username,
-            shortname,
-          });
-          const { token } = initGenerateToken.generateJwtToken("1d", secret);
+      const initUpdateToken = await userModel.findOneAndUpdate({token},{token: ''})
+      return callback({logout: !!initUpdateToken, userAuthorized: !!initUpdateToken})
+    }catch(e) {
+      return callback({logout: false, error: e})
+    }
+    // return callback(!initUpdateToken ? {logout:false, tokenFound:false} : {logout: !!initUpdateToken})
+  }
+  
+  
+  const registration = async ({email,password, ...otherKeys},callback) => {
+    const findedUser = await userModel.findOne({email})
+  
+    if(!findedUser) {
+      const {hash,secret} = await passwordHashing(password,256, 'sha256')
+      const createUser = await userModel.create({email,password:hash(), secret, userId: uuid(), ...otherKeys})
+      
 
-          await userModel.findOneAndUpdate({ email }, { token });
-          await connection.close();
-          return callback({
-            userFound: !!checkUserDb,
-            authenticationStatus: hashingRequestPassword === passwordDbUser,
-            token,
-          });
+      return callback({findedUser: !!findedUser,userСreated: !!createUser})
+    }
+    
+
+    return callback({findedUser: !!findedUser,userCreated: false})
+  }
+  
+  
+  const authentication = async ({email,password},callback) => {
+
+    try {
+      const findedUser = await userModel.findOne({email})
+      
+      if(findedUser) {
+        const {secret, password: registredUserPassword} = findedUser
+        const {username,shortname,userId} = findedUser
+        const {hash} = await passwordHashing(password,256, 'sha256')
+        const passwordComparison = hash(secret) === registredUserPassword
+        if(passwordComparison) {
+          const initGenToken = new GenJwtToken({userId, username, shortname})
+          const {token} = initGenToken.generateJwtToken('1d',secret)
+          await userModel.findOneAndUpdate({email}, {token})
+          
+          return callback({ userAuthenticated: passwordComparison, token, findedUser: !!findedUser})
         }
-        await connection.close();
-        return callback({
-          userFound: !!checkUserDb,
-          authenticationStatus: hashingRequestPassword === passwordDbUser,
-        });
+        
+        return callback({ userAuthenticated: passwordComparison, findedUser: !!findedUser})
+        
       }
-      await connection.close();
-      return callback({
-        userFound: !!checkUserDb,
-        authenticationStatus: false,
-      });
-    } catch (e) {
-      return callback({
-        userFound: false,
-        authenticationStatus: false,
-        error: e,
-      });
+      
+      return callback({findedUser: !!findedUser})
+    }catch(e) {
+      console.log(e.message)
     }
+  
   }
-);
+  apiRequestManagement.on('registration', registration)
+  apiRequestManagement.on('authentication', authentication)
+  apiRequestManagement.on('authorization', validateToken)
+  apiRequestManagement.on('logout', logOut)
+// })
 
-apiRequestManagement.on("authorization", async (token, callback) => {
-  try {
-    const { connection } = await connect(process.env.MONGO_URL);
 
-    const tokenFound = await userModel.findOne({ token });
+module.exports = {apiRequestManagement,validateToken}
 
-    if (tokenFound?.token) {
-      const { secret } = tokenFound;
-      const initGenerateToken = new GenJwtToken();
-      const { valid, resultVeification } = initGenerateToken.tokenVerification(
-        token,
-        secret
-      );
-
-      if (valid) {
-        await connection.close();
-        return callback({ valid, resultVeification });
-      }
-      await connection.close();
-      return callback({ valid, resultVeification });
-    }
-    await connection.close();
-    return callback({ tokenFound: !!tokenFound });
-  } catch (e) {
-    return callback({ tokenFound: false, error: e });
-  }
-});
-apiRequestManagement.on("logout", async (token, callback) => {
-  try {
-    const { connection } = await connect(process.env.MONGO_URL);
-    const tokenFoundAndClear = await userModel.findOneAndUpdate(
-      { token },
-      { token: "" }
-    );
-
-    if (tokenFoundAndClear) {
-      await connection.close();
-      return callback({ cleared: !!tokenFoundAndClear });
-    }
-    await connection.close();
-    return callback({
-      tokenFound: !!tokenFoundAndClear,
-      cleared: !!tokenFoundAndClear,
-    });
-  } catch (e) {
-    return callback({ tokenFound: false, error: e });
-  }
-});
-module.exports = apiRequestManagement;
