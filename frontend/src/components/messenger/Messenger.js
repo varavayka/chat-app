@@ -21,7 +21,6 @@ const Messenger = () => {
   useEffect(() => {
     ws.current = new WebSocket('ws://localhost:9091')
     ws.current.onopen = () => {
-
     }
     // return ws.current.close()
   }, [])
@@ -29,10 +28,11 @@ const Messenger = () => {
 
   useEffect(() => {
    ws.current.onmessage = ({data}) => {
-      console.log(data)
+    addMessageToList(JSON.parse(data))
+    console.log(data)
     }
 
-  }, [])
+  }, [message])
   
 
   return  (
@@ -67,9 +67,9 @@ const Messenger = () => {
 
 
               <i className="icon send clickable" onClick={() => {
-                setMessage({...message, message: '' })
-                addMessageToList(message)
                 sendMessageServer()
+                setMessage({...message, message: '' })
+                // addMessageToList(message)
                 }}>
                 <SendMessageIcon /> 
               </i>
