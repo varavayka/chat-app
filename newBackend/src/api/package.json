@@ -9,7 +9,7 @@
     "qs": "^6.11.2",
     "react-app": "file:../frontend",
     "uuid": "^9.0.1",
-    "ws": "^8.14.2"
+    "ws": "^8.15.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"

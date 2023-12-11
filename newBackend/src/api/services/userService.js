@@ -55,9 +55,9 @@ class UserService {
       const userFound = await userModel.findOne(searchPattern)
       
       if(userFound) {
-        const {password:dbUserHash,secret} = userFound
+        const {password:dbUserHash,secret, username, shortname, userId} = userFound
         const {hash:hashCandidate} = authService.hashingPassword(password, secret)
-        const {token, userAuthenticated} = authService.hashMatch(hashCandidate,dbUserHash, secret)
+        const {token, userAuthenticated} = authService.hashMatch(hashCandidate,dbUserHash, secret,{username, shortname, userId})
         
         await connection.close()
         return {token, userAuthenticated}
