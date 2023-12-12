@@ -2,7 +2,9 @@ const { validationResult } = require("express-validator");
 const db = require("../db/main")();
 const typeBody = require("../lib/typeBody");
 const sendResponse = require('../lib/sendResponse')
+const globalEventEmitter = require('../lib/eventEmitter')
 const authenticationHandler = async (req, res) => {
+
   try {
     const validCredentials = validationResult(req);
     if (!validCredentials.isEmpty()) {
@@ -14,6 +16,7 @@ const authenticationHandler = async (req, res) => {
 
     switch(true) {
       case resultFindUser:
+        globalEventEmitter.emit('getId', jwt)
         return sendResponse(userAuthenticated, res, {  jwt, userAuthenticated })
       case !resultFindUser:
         return res.status(403).json({ resultFindUser })

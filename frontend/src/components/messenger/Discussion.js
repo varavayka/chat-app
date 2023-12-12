@@ -6,7 +6,7 @@ const Discussion = () => {
     
    
   return (
-    <div className={discussion}>
+    <div className={discussion} >
       <div className={photo}>
         <div className={online}></div>
       </div>

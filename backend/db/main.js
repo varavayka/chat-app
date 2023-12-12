@@ -8,10 +8,17 @@ const { secretKey, signToken } = require("../lib/generateJwt");
 const findDoc = async (pattern) => await userModel.findOne(pattern)
 const addUser = async (user) =>  await userModel.create(user)
 const updateUserData = async ( newData, pattern) => await userModel.updateOne(pattern, { $set: newData })
+
 const checkToken = async (findDoc) => {
-  return !findDoc ? { tokenFound: false } : { tokenFound: true, secretJwt:findDoc.secretJwt }
+
+  if(findDoc) {
+    const { secretJwt,username, shortname} = findDoc
+    return {tokenFound: true,secretJwt,username, shortname}
+  }
+  return { tokenFound: false }
 }
 const logOut = async (token) => {
+
   if(await findDoc({jwt:token})) {
     await updateUserData({jwt: ''},{jwt: token})
     return {logout: true, tokenFound: true}
@@ -19,10 +26,11 @@ const logOut = async (token) => {
   return {logout:false, tokenFound: false}
   
 }
-const preparationCandidate = async ({password,email,username},  saltSize) => {
+const preparationCandidate = async ({password,email,username,shortname},  saltSize) => {
+  
   try {
     const {hash,salt} = await hashPass(password, saltSize)
-    return {email,password:hash, salt, username} 
+    return {email,password:hash, salt, username, shortname} 
 
   }catch(e) {
     console.log(e.message)
@@ -47,11 +55,12 @@ const authentication = async (resultFind, requestPassword) => {
   try {
     
     if(resultFind) {
-      const {salt,password,uuid,email, username} = resultFind
+      const {salt,password,_id,email, username} = resultFind
+      
       const computedHash = await hashPass(requestPassword, null, true, salt)
       
       if(computedHash === password) {
-        const { jwt, secret } = await signToken({uuid,email,username}, (await secretKey(256)),  "1h")
+        const { jwt, secret } = await signToken({id:JSON.stringify(_id),email,username}, (await secretKey(256)),  "1h")
         await updateUserData({ jwt, secretJwt:secret }, {email});
         return { userAuthenticated: true, jwt, resultFindUser: true}
       }

@@ -10,6 +10,7 @@ const registrationHandler = async (req, res) => {
     }
     const { registration, preparationCandidate, findDoc } = await db;
     const { email, ...other } = typeBody(req);
+    
     const { registrationStatus } = await registration(
       await findDoc({ email }),
       await preparationCandidate({ ...other, email }, 256)

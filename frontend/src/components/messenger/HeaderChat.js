@@ -1,7 +1,7 @@
 import styles from "./css/headerChat.module.css";
 const HeaderChat = ({onlineStatus}) => {
   const { headerChat, icon, name, clickable, right, online, offline } = styles;
-  const {username} = JSON.parse(atob(localStorage.getItem('jwt').split('.')[1]))
+  const {username} = JSON.parse(atob(sessionStorage.getItem('jwt').split('.')[1]))
   
   return (
     <div className={headerChat}>

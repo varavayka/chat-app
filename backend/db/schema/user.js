@@ -6,7 +6,7 @@ module.exports = model(
   new Schema({
     username: String,
     email: String,
-    shortName: String,
+    shortname: String,
     password: String,
     jwt: String,
     secretJwt: String,
