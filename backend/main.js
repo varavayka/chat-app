@@ -1,16 +1,36 @@
-require("dotenv").config();
-const cors = require("cors");
-const express = require("express");
-const app = express();
-const router = require('./router/router');
-const wsSerever = require('./lib/ws')
-app.use(cors());
+const {WebSocketServer} = require('ws')
+const {v4:socketId} = require('uuid')
+const webSocketInstance = new WebSocketServer({port: 8080})
+const socketStorage = new Set()
+const rooms = ['@kirill', '@anton', '@sanya', '@victor', '@masha']
+const messageDate = (fromParams, toParams) => `${new Date(Date.now())}`.split(' ').slice(fromParams,toParams).join(' ')
+webSocketInstance.on('connection', (socketInstance) => {
+    socketInstance.socketId = socketId()
+    const room = [...socketInstance.socketId].splice(0, 5).join('')
+    const broadcastRoom = 'room_broadcast'
+    socketInstance.room = room
+    if(!socketInstance.room) {
+        return socketInstance.terminate()
+    }
+    socketStorage.add(socketInstance)
+    console.log(`кол-во подключений - ${socketStorage.size}, socketId - ${socketInstance.socketId}, комната сокета -> ${socketInstance.room}`)
 
-app.use(express.json());
+    // socketInstance.send(JSON.stringify({type: 'user_info', room:socketInstance.room, socketId: socketInstance.socketId}))
+    socketStorage.forEach(client => client.send(JSON.stringify({type: 'user_info', room:socketInstance.room, socketId: socketInstance.socketId})))
 
-app.use(router);
+    socketInstance.on('message', (bufferData) => {
+        const response = JSON.parse(bufferData)
+        const {type} =   response
+        socketStorage.forEach(client => {
+            if(type == 'user_message') {
+                client.send(JSON.stringify({...response,type:'user_message', socketId:socketInstance.socketId, result: socketInstance.socketId === client.socketId, date: messageDate(0,5)}))
+            }
+        })
+    })
+    socketInstance.on('close', () => {
+        socketStorage.delete(socketInstance)
+        console.log(`Соединеие закрыто, ID сокета - ${socketInstance.socketId}`)
+    })
 
-app.listen(process.env.HTTP_SERVER_PORT, async () => {
-  await wsSerever()
-  console.log("http server is runnig!" + " " + process.env.HTTP_SERVER_PORT);
-});
+})
+
