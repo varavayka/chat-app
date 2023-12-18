@@ -1,36 +1,57 @@
 const {WebSocketServer} = require('ws')
-const {v4:socketId} = require('uuid')
+const {v4:uuid} = require('uuid')
+const {EventEmitter} = require('events')
+const modificateReport = require('./modificateReport')
+const messageDate = require('./messageDate')
+
+
 const webSocketInstance = new WebSocketServer({port: 8080})
+
+
+const e = new EventEmitter()
 const socketStorage = new Set()
-const rooms = ['@kirill', '@anton', '@sanya', '@victor', '@masha']
-const messageDate = (fromParams, toParams) => `${new Date(Date.now())}`.split(' ').slice(fromParams,toParams).join(' ')
+
+
+
 webSocketInstance.on('connection', (socketInstance) => {
-    socketInstance.socketId = socketId()
-    const room = [...socketInstance.socketId].splice(0, 5).join('')
-    const broadcastRoom = 'room_broadcast'
-    socketInstance.room = room
-    if(!socketInstance.room) {
-        return socketInstance.terminate()
-    }
+    socketInstance.socketId = uuid()
+    socketInstance.room = [...socketInstance.socketId].slice(0,5).join('')
     socketStorage.add(socketInstance)
-    console.log(`кол-во подключений - ${socketStorage.size}, socketId - ${socketInstance.socketId}, комната сокета -> ${socketInstance.room}`)
+    socketInstance.on('message', (messageReceived) => {
 
-    // socketInstance.send(JSON.stringify({type: 'user_info', room:socketInstance.room, socketId: socketInstance.socketId}))
-    socketStorage.forEach(client => client.send(JSON.stringify({type: 'user_info', room:socketInstance.room, socketId: socketInstance.socketId})))
 
-    socketInstance.on('message', (bufferData) => {
-        const response = JSON.parse(bufferData)
-        const {type} =   response
-        socketStorage.forEach(client => {
-            if(type == 'user_message') {
-                client.send(JSON.stringify({...response,type:'user_message', socketId:socketInstance.socketId, result: socketInstance.socketId === client.socketId, date: messageDate(0,5)}))
-            }
-        })
+        const {type} = JSON.parse(messageReceived)
+        console.log(type)
+        const preparationMessage = {
+            ...JSON.parse(messageReceived),
+            socketId: socketInstance.socketId,
+            room: socketInstance.room,
+        }
+        if(type === 'broadcast') {
+           return  broadcast(socketStorage, preparationMessage)
+        }
+        roomCommunication(type, socketStorage, preparationMessage)
+        
+
     })
-    socketInstance.on('close', () => {
-        socketStorage.delete(socketInstance)
-        console.log(`Соединеие закрыто, ID сокета - ${socketInstance.socketId}`)
-    })
-
 })
 
+
+
+function broadcast(listOfClients, messageToSend) {
+    const {socketId: idFromMessage} = messageToSend
+    const preparationMessage = {
+        ...messageToSend,
+        date: messageDate(0,5)
+    }
+    
+    listOfClients.forEach(client => {
+        const comparisonId = client.socketId === idFromMessage
+        client.send(JSON.stringify({...preparationMessage, comparisonId}))
+    })
+}
+
+function roomCommunication(roomId, listOfClients, messageToSend) {
+    
+}
+ 
