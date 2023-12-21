@@ -59,10 +59,8 @@ webSocketInstance.on('connection', (socketInstance) => {
     })
 })
 
-const listPrivateMessage = []
 function messageFilter(message, socketList, socketInstance) {
-    const {messageType, privateChat, socketId, to, from, message:receiveMessage} = message
-    
+    const {messageType, to, from} = message
     switch(messageType) {
 
         case 'broadcast_message':
@@ -70,11 +68,11 @@ function messageFilter(message, socketList, socketInstance) {
             break
         
         case 'chat_message':
-            const {from, to, socketId:socketId0} = message
 
             socketStorage.forEach((client) => {
+                
                 if(to === client.chatId) {
-                    
+                    console.log(from)
                     client.send(JSON.stringify(message))
                 }
 
@@ -109,90 +107,4 @@ function messageSendingHandler(listOfClients, messageToSend, socketInstance) {
 
     })
 }
- 
-
-
-
-
-
-// const {WebSocketServer} = require('ws')
-// const {v4:uuid} = require('uuid')
-// const {EventEmitter} = require('events')
-// const modificateReport = require('./modificateReport')
-// const messageDate = require('./messageDate')
-
-
-// const webSocketInstance = new WebSocketServer({port: 8080})
-
-
-// const e = new EventEmitter()
-// const socketStorage = new Set()
-
-
-
-// webSocketInstance.on('connection', (socketInstance) => {
-//     socketInstance.socketId = uuid()
-//     socketInstance.chatId = socketInstance.socketId.split('-')[0]
-
-//     socketStorage.add(socketInstance)
-//     console.log(socketInstance.chatId)
-
-   
-
-//     socketInstance.on('message', (messageReceived) => {
-//         const {socketId, chatId} = socketInstance
-//         const messageInstance = {
-//             ...JSON.parse(messageReceived),
-//             socketId, chatId,
-//             date: messageDate(0,5),
-//             from: chatId
-//         }
-//         messageFilter(messageInstance,socketStorage, socketInstance )
-
-//     })
-// })
-
-
-// function messageFilter(message, socketList, socketInstance) {
-//     const {messageType, privateChat, socketId, to} = message
-    
-//     switch(messageType) {
-
-//         case 'broadcast_message':
-            
-//             messageSendingHandler(socketList, message)
-//             break
-        
-//         case 'chat_message':
-//             socketList.forEach(client => {
-//                 if(socketInstance.chatId === to) {
-//                     client.send(JSON.stringify(message))
-//                 }
-                    
-//             })
-//             break
-        
-//         case 'search_message':
-//             const {searchPattern}  = message
-//             const {chatId} = [...socketList].find(({chatId}) => chatId === searchPattern)
-//             messageSendingHandler(socketList, {...message, searchPattern:chatId})
-//             break
-
-//     }
-// }
-
-
-// function messageSendingHandler(listOfClients, messageToSend) {
-//     const {socketId} = messageToSend
-    
-//     listOfClients.forEach(client => {
-
-//         const messageInstance = {
-//             ...messageToSend,
-//             compareId:client.socketId === socketId
-//         }
-//         client.send(JSON.stringify(messageInstance))
-
-//     })
-// }
  

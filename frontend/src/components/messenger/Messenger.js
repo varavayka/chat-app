@@ -50,7 +50,7 @@ const Messenger = () => {
             break
           
           case 'chat_message':
-            console.log(message)
+              
             setChatMessage([...chatMessage, message])
             break
           
@@ -59,7 +59,7 @@ const Messenger = () => {
             break
           
           default:
-            console.log(message)
+            // console.log(message)
             break
 
         }
@@ -74,7 +74,6 @@ const Messenger = () => {
         const messageInstance = {
           ...inputValue,
           messageType: !enterChat ? 'broadcast_message': 'chat_message',
-          
           to: enterChat,
 
         }
@@ -96,18 +95,14 @@ const Messenger = () => {
             <section className="discussions">
               <SearchBar searchHandler={searchHandlerUser}/>
            
-                {resultSearchUser.map(({searchPattern,compareId, toRoom, fromRoom}) => {
+                {resultSearchUser.map(({searchPattern,compareId}) => {
                   if(searchPattern && compareId) {
-                    
-                    
-                      
+
                     return (
                       <div key={v4()}>
                         <Discussion chatId={searchPattern} setEnterChat={setEnterChat}/> 
                       </div>
                     )
-
-                    
 
                   }
                   return null
@@ -122,8 +117,8 @@ const Messenger = () => {
               {/* <HeaderChat  onlineStatus={onlineStatus} username={room || privateRoom}/> */}
               <div className="messages-chat">
                
-                {!chatMessage.length ? '' : chatMessage.map(({message, date, socketId, compareId, toRoom, chatId}) => {
-                  if(chatId === toRoom) {
+                {!chatMessage.length ? '' : chatMessage.map(({message, date, socketId, compareId, chatId}) => {
+                  
                   return (
                   <div key={v4()} className={compareId ? 'right' : 'left' }>
                     <Message text={message} compareId={compareId}  >
@@ -131,9 +126,8 @@ const Messenger = () => {
                     <p className="time"> {date}</p>
                     </Message>
                     </div>)
-                  }
-                  console.log(chatId, toRoom)
-                  return null
+                  
+                  
                 })}
               </div>
               <div className="footer-chat">
