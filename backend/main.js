@@ -72,13 +72,13 @@ function messageFilter(message, socketList, socketInstance) {
         case 'chat_message':
             const {from, to, socketId:socketId0} = message
 
-            socketStorage.forEach(({chatId,socketId:socketId1,  ...socket}) => {
-                // if(chatId === to) {
-                    // }
-                    listPrivateMessage.push({route: `${from} ${from === chatId ? '->' : '<-'} ${to}`, receiveMessage})
-                    modificateReport(JSON.stringify(listPrivateMessage), '*')
+            socketStorage.forEach((client) => {
+                if(to === client.chatId) {
+                    
+                    client.send(JSON.stringify(message))
+                }
+
             } )
-            // messageSendingHandler(socketList, {...message, fromRoom:from, toRoom: to}, socketInstance)
             break
         
         case 'search_message':

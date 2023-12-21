@@ -50,6 +50,7 @@ const Messenger = () => {
             break
           
           case 'chat_message':
+            console.log(message)
             setChatMessage([...chatMessage, message])
             break
           
