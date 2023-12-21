@@ -1,31 +1,31 @@
 import styles from "./css/discussion.module.css";
 
-// import { useEffect , useRef} from "react";
-const Discussion = ({entranceRoom, setRoom1, room: frontRoom}) => {
+import { useEffect , useRef} from "react";
+const Discussion = ({chatId, setEnterChat}) => {
   const { discussion, photo, online, descContact, name, message, timer } = styles;
-  const {room, msg,date, comparisonId} = entranceRoom
   
-   
+ 
   return (
 
-    <div className={discussion} onClick={setRoom1()}>
+    <div className={discussion} onClick={() => {
+      setEnterChat(chatId)
+      // setRoom('')
+      // setprivateRoom(privateRoom)
+      // setPrivateType('private')
+      }}>
       
       <div className={photo}>
         <div className={online}></div>
       </div>
       <div className={descContact}>
-        <p className={name}>Общий чат</p>
-        <p className={message}> { msg ? comparisonId ? `Вы: ${msg}` : `${room}: ${msg}`: ''}</p>
-      </div> 
-      {
-        date?.split(' ')[4] 
-        ? <div className={timer}>{date?.split(' ')[4]}</div> 
-        : null
-      }
+        <p className={name}>{chatId}</p>
+        <p className={message}> </p>
+        {/* { msg ? comparisonId ? `Вы: ${msg}` : `${room}: ${msg}`: ''} */}
+      </div>
+
       {/* {
-        room
-        ? 
-        <div className={timer}>{room}</div>
+        date?.split(' ')[4] 
+        ? <div className={timer}>{date?.split(' ')[4].split(':').slice(0,2).join(':')}</div> 
         : null
       } */}
       

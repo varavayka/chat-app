@@ -5,7 +5,9 @@ const HeaderChat = ({onlineStatus, username=null}) => {
   
   return (
     <div className={headerChat}>
-      <p className={name}>{username === 'broadcast' ? 'Общий чат': username}</p>
+      {/* <p className={name}>{username === 'broadcast' ? 'Общий чат': username}</p> */}
+      <p className={name}>{username}</p>
+
       <p className={ username ? onlineStatus ? online : offline : null}></p>
       <i className={icon}></i>
       <i className={`${icon} ${clickable}  ${right}`}></i>
