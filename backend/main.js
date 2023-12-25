@@ -5,46 +5,23 @@ const modificateReport = require('./modificateReport')
 const messageDate = require('./messageDate')
 
 
-const messageInstance = {
-    message: 'string',
-    date: 'string',
-    
-    identifiers: {
-        userId: 'string',
-        chatId: 'string',
-        
-    },
-    informationTransmitted: {
-       fromUser: 'string',
-       toUser: 'string'
-
-    }
-
-}
-
-
-
-
 const webSocketInstance = new WebSocketServer({port: 8080})
 
 
 const e = new EventEmitter()
 const socketStorage = new Set()
-const privateStorage = new Set()
-
+const privateSockets = new Set()
 webSocketInstance.on('connection', (socketInstance) => {
-    socketInstance.socketId = uuid()
-    socketInstance.chatId = socketInstance.socketId.split('-')[0]
+
+    const socketId = uuid()
+    const chatId = socketId.split('-')
+    socketInstance.socketId = socketId
+    socketInstance.chatId = chatId[chatId.length - 1]
     socketStorage.add(socketInstance)
 
     modificateReport(`Кол-во пользователей онлайн: ${socketStorage.size}\nИдентификаторы пользователей: ${socketInstance.socketId}\nИдентификатор чата: ${socketInstance.chatId}`)
 
-   
-    // e.on(socketInstance.socketId, (message=null, socket) => {
-    //     const {chatId} = message
-    //     console.log(chatId)
-    //     // socket.send(JSON.stringify(message))
-    // })
+    socketStorage.forEach(infoMessage => infoMessage.send(JSON.stringify({messageType: 'init_message', userId: infoMessage.socketId, chatId: infoMessage.chatId})))
 
     socketInstance.on('message', (messageReceived) => {
         const {socketId, chatId} = socketInstance
@@ -68,15 +45,23 @@ function messageFilter(message, socketList, socketInstance) {
             break
         
         case 'chat_message':
-
-            socketStorage.forEach((client) => {
-                
-                if(to === client.chatId) {
-                    console.log(from)
-                    client.send(JSON.stringify(message))
+            socketStorage.forEach(socket => {
+                if(socket.chatId === from ) {
+                    privateSockets.add(socket)
                 }
+                if(socket.chatId === to) {
+                    privateSockets.add(socket)
+                }
+            })
+            
+            privateSockets.forEach(socket => {
+                const privateMessage = {
+                    messageType: 'chat_message',
+                    ...message
+                }
+                socket.send(JSON.stringify(privateMessage))
+            })
 
-            } )
             break
         
         case 'search_message':
@@ -95,7 +80,7 @@ function messageFilter(message, socketList, socketInstance) {
 
 
 */
-function messageSendingHandler(listOfClients, messageToSend, socketInstance) {
+function messageSendingHandler(listOfClients, messageToSend) {
     const {socketId} = messageToSend
     listOfClients.forEach(client => {
 

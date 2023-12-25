@@ -1,4 +1,4 @@
-import { useEffect,  useState,useRef, useCallback } from "react";
+import { useEffect,  useState,useRef} from "react";
 import {v4} from 'uuid'
 import "./css/messenger.css";
 import Menu from "./ Menu";
@@ -17,14 +17,13 @@ const Messenger = () => {
     const [inputValue,setInputValue] = useState({})
 
     const [broadCastMessage, setBroadCastMessage] = useState([])
+    // const [resultSearchUser, setResultSearchUser] = useState([])
     const [resultSearchUser, setResultSearchUser] = useState([])
+
     const [chatMessage, setChatMessage] = useState([])
- 
-    const [enterChat, setEnterChat] = useState(null)
-
-
-
-
+    const [privateMessage, setPrivateMessage] = useState([])
+    // const [listUsers, setListUser] = useState([])
+    const [destenationChat, setDestenationChat] = useState('')
     const ws = useRef(null)
     useEffect(() => {
       ws.current = new WebSocket('ws://localhost:8080/')
@@ -45,19 +44,27 @@ const Messenger = () => {
 
         switch(messageType) {
 
+          case 'init_message':
+            sessionStorage.setItem('userIdentificators', JSON.stringify({yourChatId: message.chatId, yourUserId: message.userId}))
+            // setListUser([...listUsers, message])
+            break
+
           case 'broadcast_message':
             setBroadCastMessage([...broadCastMessage, message])
             break
           
-          case 'chat_message':
-              
+          case 'chat_message': 
             setChatMessage([...chatMessage, message])
             break
           
           case 'search_message':
+            
             setResultSearchUser([...resultSearchUser, message])
             break
           
+          case 'private_message':
+            setPrivateMessage([...privateMessage, message])
+            break
           default:
             // console.log(message)
             break
@@ -65,16 +72,16 @@ const Messenger = () => {
         }
         
       }
-    }, [broadCastMessage, resultSearchUser, chatMessage])
+    }, [broadCastMessage, resultSearchUser, chatMessage, privateMessage])
      
     function sendMessage(inputValue) {
       
       if(Object.values(inputValue).length) {
-        
         const messageInstance = {
           ...inputValue,
-          messageType: !enterChat ? 'broadcast_message': 'chat_message',
-          to: enterChat,
+          messageType: 'chat_message',
+          from: JSON.parse(sessionStorage.getItem('userIdentificators')).yourChatId,
+          to: destenationChat
 
         }
         ws.current.send(JSON.stringify(messageInstance))
@@ -96,11 +103,12 @@ const Messenger = () => {
               <SearchBar searchHandler={searchHandlerUser}/>
            
                 {resultSearchUser.map(({searchPattern,compareId}) => {
+                  
                   if(searchPattern && compareId) {
 
                     return (
                       <div key={v4()}>
-                        <Discussion chatId={searchPattern} setEnterChat={setEnterChat}/> 
+                        <Discussion setDestenationChat={setDestenationChat} chatId={searchPattern}/> 
                       </div>
                     )
 
@@ -113,23 +121,25 @@ const Messenger = () => {
             </section>
 
             <section className="chat">
-              <HeaderChat  onlineStatus={onlineStatus} username={enterChat}/>
-              {/* <HeaderChat  onlineStatus={onlineStatus} username={room || privateRoom}/> */}
-              <div className="messages-chat">
+              
+                    <HeaderChat  onlineStatus={onlineStatus} username={destenationChat}/>
+
+                    <div className="messages-chat" key={v4()}>
                
-                {!chatMessage.length ? '' : chatMessage.map(({message, date, socketId, compareId, chatId}) => {
+                      {!chatMessage.length ? '' : chatMessage.map(({message, date, socketId, compareId, chatId}) => {
+                        // console.log(privateMessage)
+                        return (
+                        <div key={v4()} className={compareId ? 'right' : 'left' }>
+                          <Message text={message} compareId={compareId}  >
+                          <p className="userId">{socketId}</p>
+                          <p className="time"> {date}</p>
+                          </Message>
+                          </div>)
+                        
+                        
+                      })}
+                    </div>
                   
-                  return (
-                  <div key={v4()} className={compareId ? 'right' : 'left' }>
-                    <Message text={message} compareId={compareId}  >
-                    <p className="userId">{socketId}</p>
-                    <p className="time"> {date}</p>
-                    </Message>
-                    </div>)
-                  
-                  
-                })}
-              </div>
               <div className="footer-chat">
 
                 <input 

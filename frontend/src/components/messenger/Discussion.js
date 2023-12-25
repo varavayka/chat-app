@@ -1,17 +1,14 @@
 import styles from "./css/discussion.module.css";
 
 import { useEffect , useRef} from "react";
-const Discussion = ({chatId, setEnterChat}) => {
+const Discussion = ({setDestenationChat, chatId}) => {
   const { discussion, photo, online, descContact, name, message, timer } = styles;
   
  
   return (
 
     <div className={discussion} onClick={() => {
-      setEnterChat(chatId)
-      // setRoom('')
-      // setprivateRoom(privateRoom)
-      // setPrivateType('private')
+      setDestenationChat(chatId)
       }}>
       
       <div className={photo}>
