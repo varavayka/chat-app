@@ -34,10 +34,11 @@ webSocketInstance.on('connection', (socketInstance) => {
         messageFilter(messageInstance,socketStorage, socketInstance )
 
     })
+    socketInstance.on('close', () => socketStorage.delete(socketInstance))
 })
 
-function messageFilter(message, socketList, socketInstance) {
-    const {messageType, to, from} = message
+function messageFilter(message, socketList) {
+    const {messageType, to, from, message: clientMessage} = message
     switch(messageType) {
 
         case 'broadcast_message':
@@ -45,23 +46,7 @@ function messageFilter(message, socketList, socketInstance) {
             break
         
         case 'chat_message':
-            socketStorage.forEach(socket => {
-                if(socket.chatId === from ) {
-                    privateSockets.add(socket)
-                }
-                if(socket.chatId === to) {
-                    privateSockets.add(socket)
-                }
-            })
-            
-            privateSockets.forEach(socket => {
-                const privateMessage = {
-                    messageType: 'chat_message',
-                    ...message
-                }
-                socket.send(JSON.stringify(privateMessage))
-            })
-
+            privateRoom(socketStorage, message)
             break
         
         case 'search_message':
@@ -73,13 +58,67 @@ function messageFilter(message, socketList, socketInstance) {
     }
 }
 
-/*
-    как идея, можно получать номера сокертов  из ключей from и to в сообщении, отправлять их в другое хранилище, конрктно два сокета с этими номерами и уже устраивать между этими сокетами двусторонее соединение
-    так же идея номер 2 - использовать EventEmitter в котороый будет передавать как событие номер сокета, и при приёме сообщения, будет происходить срабатывание обработчика 
+
+function privateRoom(socketStorage, message) {
+    const {from, to} = message
+    const rooms = subArr([...socketStorage])
     
+    rooms.forEach(room => {
+        roomSenders(room, message)
+    })
+
+    
+}
+
+function roomSenders(room, message) {
+    const {socketId, from, to}  = message
+   room.forEach((client, index) => {
+    const messageInstance = {
+        ...message,
+        compareId:client.socketId === socketId
+    }
+    if(from === client.chatId || to === client.chatId) {
+        client.send(JSON.stringify(messageInstance))
+
+    }
+   })
+}
+function  subArr(arr, countElem=2) {
+    let count = 0
+    let resultArr = []
+    while(count < Math.ceil(arr.length / countElem)) {
+
+        resultArr[count] = arr.slice((count * countElem), (count * countElem) + countElem)
+        count++
+    }
+
+    return resultArr
+}
 
 
-*/
+// function privateRoom(socketStorage, privateSockets, message) {
+//     const {from, to} = message
+//     socketStorage.forEach(socket => {
+//         if(socket.chatId === from ) {
+//             privateSockets.add(socket)
+//         }
+//         if(socket.chatId === to) {
+//             privateSockets.add(socket)
+//         }
+//     })
+    
+//     privateSockets.forEach(socket => {
+//         const privateMessage = {
+//             messageType: 'chat_message',
+//             ...message,
+//             compareId:socket.socketId === message.socketId
+//         }
+        
+        
+//             socket.send(JSON.stringify(privateMessage))
+        
+//     })
+// }
 function messageSendingHandler(listOfClients, messageToSend) {
     const {socketId} = messageToSend
     listOfClients.forEach(client => {

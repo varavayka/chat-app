@@ -17,14 +17,12 @@ const Messenger = () => {
     const [inputValue,setInputValue] = useState({})
 
     const [broadCastMessage, setBroadCastMessage] = useState([])
-    // const [resultSearchUser, setResultSearchUser] = useState([])
     const [resultSearchUser, setResultSearchUser] = useState([])
 
     const [chatMessage, setChatMessage] = useState([])
-    const [privateMessage, setPrivateMessage] = useState([])
-    // const [listUsers, setListUser] = useState([])
     const [destenationChat, setDestenationChat] = useState('')
     const ws = useRef(null)
+
     useEffect(() => {
       ws.current = new WebSocket('ws://localhost:8080/')
       ws.current.onopen = (({target:{readyState}}) => setOnlineStats(true))
@@ -62,9 +60,6 @@ const Messenger = () => {
             setResultSearchUser([...resultSearchUser, message])
             break
           
-          case 'private_message':
-            setPrivateMessage([...privateMessage, message])
-            break
           default:
             // console.log(message)
             break
@@ -72,7 +67,7 @@ const Messenger = () => {
         }
         
       }
-    }, [broadCastMessage, resultSearchUser, chatMessage, privateMessage])
+    }, [broadCastMessage, resultSearchUser, chatMessage])
      
     function sendMessage(inputValue) {
       
@@ -85,6 +80,7 @@ const Messenger = () => {
 
         }
         ws.current.send(JSON.stringify(messageInstance))
+        setInputValue({})
       }
 
     }
@@ -95,26 +91,28 @@ const Messenger = () => {
 
     
     return (
-      <div className="body">
+      <div className="body" onKeyDown={({key}) => key === 'Enter' ? sendMessage(inputValue): null}>
         <div className="container">
           <div className="row">
             <Menu />
             <section className="discussions">
               <SearchBar searchHandler={searchHandlerUser}/>
            
-                {resultSearchUser.map(({searchPattern,compareId}) => {
-                  
-                  if(searchPattern && compareId) {
+                {
+                  resultSearchUser.map(({searchPattern,compareId}) => {
+                    
+                    if(searchPattern && compareId) {
 
-                    return (
-                      <div key={v4()}>
-                        <Discussion setDestenationChat={setDestenationChat} chatId={searchPattern}/> 
-                      </div>
-                    )
+                      return (
+                        <div key={v4()}>
+                          <Discussion setDestenationChat={setDestenationChat} chatId={searchPattern}/> 
+                        </div>
+                      )
 
-                  }
-                  return null
-                })}
+                    }
+                    return null
+                  })
+                }
                
                  
              
@@ -127,14 +125,15 @@ const Messenger = () => {
                     <div className="messages-chat" key={v4()}>
                
                       {!chatMessage.length ? '' : chatMessage.map(({message, date, socketId, compareId, chatId}) => {
-                        // console.log(privateMessage)
                         return (
-                        <div key={v4()} className={compareId ? 'right' : 'left' }>
-                          <Message text={message} compareId={compareId}  >
-                          <p className="userId">{socketId}</p>
-                          <p className="time"> {date}</p>
-                          </Message>
-                          </div>)
+
+                          <div key={v4()} className={compareId ? 'right' : 'left' }>
+                            <Message text={message} compareId={compareId}  >
+                            <p className="userId">{compareId ? 'вы' : 'Собеседник'}</p>
+                            <p className="time"> {date}</p>
+                            </Message>
+                          </div>
+                          )
                         
                         
                       })}
@@ -149,9 +148,11 @@ const Messenger = () => {
                 onChange={inputHandler(setInputValue,inputValue, 'message')}
                 value={inputValue.message || ''}/>
 
-                <i className="icon send clickable" onClick={buttonHandler(setAllowSend,allowSend,false, true, () => {
+                <i className="icon send clickable" 
+                
+                onClick={buttonHandler(setAllowSend,allowSend,false, true, () => {
                   sendMessage(inputValue)
-                  setInputValue({})
+                  // setInputValue({})
                 } )}><SendMessageIcon /></i>
 
               </div>
