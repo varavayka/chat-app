@@ -3,7 +3,7 @@ const {v4:uuid} = require('uuid')
 const {EventEmitter} = require('events')
 const modificateReport = require('./modificateReport')
 const messageDate = require('./messageDate')
-
+const subArr = require('./subArr')
 
 const webSocketInstance = new WebSocketServer({port: 8080})
 
@@ -38,7 +38,7 @@ webSocketInstance.on('connection', (socketInstance) => {
 })
 
 function messageFilter(message, socketList) {
-    const {messageType, to, from, message: clientMessage} = message
+    const {messageType, to, from, message: clientMessage, socketId, chatId, room} = message
     switch(messageType) {
 
         case 'broadcast_message':
@@ -46,54 +46,81 @@ function messageFilter(message, socketList) {
             break
         
         case 'chat_message':
-            privateRoom(socketStorage, message)
+            const sockets = [...socketStorage]
+            const connections = subArr(sockets, socketId)
+            
+
+            connections.forEach(session => {
+                const {clients} = session
+                console.log(session.clients[0])
+                // session.clients.forEach(client => {
+                //     // console.log(`идентификатор из сообщения: ${socketId}\nИдентификатор сессии: ${session.sessionId}\n${client.socketId === socketId ? 'вы': 'не вы'}`)
+                //     if(socketId === client.socketId) {
+                //         client.send(JSON.stringify({...message, compareId:client.socketId === socketId}))
+                //     }
+                // })
+            })
+            // const [ws1,ws2,ws3,ws4] = subArr(sockets)
+            // const [ws1] = subArr(sockets)
+
+            // ws1.forEach(clients => {
+            //     clients.send(JSON.stringify(message))
+            //     // clients.send(JSON.stringify({...message, compareId:clients.socketId === socketId}))
+            // })
+            // console.log('Первая комната ', ws1)
+            // console.log(ws1,ws2,ws3)
+            // console.log('Вторая комната ', ws2)
+            // console.log('Третья комната ', ws3)
+            // console.log('Четвертая комната ', ws4)
+
+            // rooms.forEach((session) => {
+            //     const [socketOne, socketTwo, {sessionId}] = session
+            //     socketOne.session = sessionId
+            //     socketTwo.session = sessionId
+                
+                
+            //     const privateSocket = [socketOne,socketTwo]
+
+            //     privateSocket.forEach(client => {
+            //         if(client.session === sessionId) {
+
+            //             client.send(JSON.stringify({...message, compareId:client.socketId === socketId}))
+            //         }
+            //     })
+                
+            // })
+            // rooms.forEach(room => {
+                
+            //     // room.forEach((client, index) => {
+            //     //     const messageInstance = {
+            //     //         ...message,
+            //     //         compareId:client.socketId === socketId
+            //     //     }
+            //     //     if(from === client.chatId) {
+            //     //         client.send(JSON.stringify(messageInstance))
+            //     //     }
+            //     //     if(to === client.chatId) {
+            //     //         client.send(JSON.stringify(messageInstance))
+
+            //     //     }
+            //     //    })
+
+            // })
             break
         
         case 'search_message':
-            const {searchPattern}  = message
-            const {chatId} = [...socketList].find(({chatId}) => chatId === searchPattern)
-            messageSendingHandler(socketList, {...message, searchPattern:chatId})
+            searchRequestHandler(message,socketList, messageSendingHandler)
+            // const {searchPattern}  = message
+            // const {chatId} = [...socketList].find(({chatId}) => chatId === searchPattern)
+            // messageSendingHandler(socketList, {...message, searchPattern:chatId})
             break
 
     }
 }
 
 
-function privateRoom(socketStorage, message) {
-    const {from, to} = message
-    const rooms = subArr([...socketStorage])
-    
-    rooms.forEach(room => {
-        roomSenders(room, message)
-    })
 
-    
-}
 
-function roomSenders(room, message) {
-    const {socketId, from, to}  = message
-   room.forEach((client, index) => {
-    const messageInstance = {
-        ...message,
-        compareId:client.socketId === socketId
-    }
-    if(from === client.chatId || to === client.chatId) {
-        client.send(JSON.stringify(messageInstance))
-
-    }
-   })
-}
-function  subArr(arr, countElem=2) {
-    let count = 0
-    let resultArr = []
-    while(count < Math.ceil(arr.length / countElem)) {
-
-        resultArr[count] = arr.slice((count * countElem), (count * countElem) + countElem)
-        count++
-    }
-
-    return resultArr
-}
 
 
 // function privateRoom(socketStorage, privateSockets, message) {
@@ -132,3 +159,10 @@ function messageSendingHandler(listOfClients, messageToSend) {
     })
 }
  
+
+
+function searchRequestHandler(message,socketList, messageSendingHandler) {
+    const {searchPattern}  = message
+    const {chatId} = [...socketList].find(({chatId}) => chatId === searchPattern)
+    messageSendingHandler(socketList, {...message, searchPattern:chatId})
+}
