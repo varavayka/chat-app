@@ -1,4 +1,10 @@
 .search {
+  /* display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #e0e0e0; */
+
+
   display: flex;
   align-items: center;
   justify-content: center;
@@ -78,4 +84,13 @@
 
 .search .searchbar {
   color: #e0e0e0;
+}
+
+.searchBarButton {
+  border: 0;
+  outline: none;
+  padding: 3px 23px 4px;
+  font-size: 14px;
+  border-radius: 18px;
+
 }

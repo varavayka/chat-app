@@ -8,8 +8,11 @@
   background-color: #fff;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
   height: 700px;
+  display: grid;
 }
-
+.row_01 {
+  display: grid;
+}
 /* === CONVERSATIONS === */
 
 .discussions {
@@ -32,11 +35,16 @@
 }
 
 .chat {
-  width: 42rem;
+  /* width: 42rem;
+  display: grid;
+  align-content: space-between;
+  justify-items: stretch;
+  height: 43rem; */
+  width: 71rem;
     display: grid;
     align-content: space-between;
     justify-items: stretch;
-    height: 43rem;
+    height: 38rem;
 
 }
 
@@ -87,12 +95,19 @@
 }
 .footer-chat {
 
-  background-color: transparent;
+  /* background-color: transparent;
   border-top: 2px solid #eee;
   display: grid;
   grid-template-columns: 35rem 7rem;
   justify-items: end;
+  align-items: center; */
+  background-color: transparent;
+  border-top: 2px solid #eee;
+  display: grid;
+  grid-template-columns: 62rem 9rem;
   align-items: center;
+  justify-items: end;
+  width: 71rem;
 }
 
 .chat .footer-chat .icon {
@@ -119,11 +134,16 @@
 }
 
 .write-message {
-  border: 0;
+  /* border: 0;
   padding: 0px;
   width: 34rem;
   height: 3rem;
-  outline: none;
+  outline: none; */
+  border: 0;
+    padding: 20px;
+    width: 62rem;
+    height: 3rem;
+    outline: none;
 }
 .clickable {
   cursor: pointer;
@@ -140,3 +160,16 @@
   display: grid;
   justify-content: flex-start;
 }
+
+
+
+
+
+
+
+
+
+
+/* .row {
+  display: grid;
+} */

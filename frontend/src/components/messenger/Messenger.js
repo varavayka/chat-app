@@ -41,6 +41,7 @@ const Messenger = () => {
           case 'init_message':
             sessionStorage.setItem('userIdentificators', JSON.stringify({yourChatId: message.chatId, yourUserId: message.userId}))
             // setListUser([...listUsers, message])
+            // console.log(message)
             break
 
           case 'broadcast_message':
@@ -52,8 +53,9 @@ const Messenger = () => {
             break
           
           case 'search_message':
-            
-            setResultSearchUser([...resultSearchUser, message])
+            console.log(message)
+            setDestenationChat(message.searchPattern)
+            // setResultSearchUser([...resultSearchUser, message])
             break
           
           default:
@@ -75,7 +77,7 @@ const Messenger = () => {
           to: destenationChat || response() 
 
         }
-        console.log(messageInstance)
+        // console.log(messageInstance)
         
         ws.current.send(JSON.stringify(messageInstance))
         setInputValue({})
@@ -101,34 +103,12 @@ const Messenger = () => {
     return (
       <div className="body" onKeyDown={({key}) => key === 'Enter' ? sendMessage(inputValue): null}>
         <div className="container">
-          <div className="row">
-            <Menu />
-            <section className="discussions">
-              <SearchBar searchHandler={searchHandlerUser}/>
+          <div className="row_01">
+          
+            <SearchBar searchHandler={searchHandlerUser}/>
            
-                {
-                  resultSearchUser.map(({searchPattern,compareId}) => {
-                    
-                    if(searchPattern && compareId) {
-
-                      return (
-                        <div key={v4()}>
-                          <Discussion setDestenationChat={setDestenationChat} chatId={searchPattern}/> 
-                        </div>
-                      )
-
-                    }
-                    return null
-                  })
-                }
-               
-                 
-             
-            </section>
-
             <section className="chat">
-              
-                    <HeaderChat  onlineStatus={onlineStatus} username={destenationChat}/>
+                   { destenationChat ? <HeaderChat  onlineStatus={onlineStatus} username={response() || destenationChat  }/>: ''}
 
                     <div className="messages-chat" key={v4()}>
                
