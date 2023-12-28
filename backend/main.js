@@ -10,7 +10,7 @@ const webSocketInstance = new WebSocketServer({port: 8080})
 
 const e = new EventEmitter()
 const socketStorage = new Set()
-const privateSockets = new Set()
+const rooms = new Map()
 webSocketInstance.on('connection', (socketInstance) => {
 
     const socketId = uuid()
@@ -38,7 +38,7 @@ webSocketInstance.on('connection', (socketInstance) => {
 })
 
 function messageFilter(message, socketList) {
-    const {messageType, to, from, message: clientMessage, socketId, chatId, room} = message
+    const {messageType, to, from, message: clientMessage, socketId, chatId} = message
     switch(messageType) {
 
         case 'broadcast_message':
@@ -46,20 +46,63 @@ function messageFilter(message, socketList) {
             break
         
         case 'chat_message':
+
             const sockets = [...socketStorage]
-            const connections = subArr(sockets, socketId)
+            const listRooms = subArr(sockets)
             
 
-            connections.forEach(session => {
-                const {clients} = session
-                console.log(session.clients[0])
-                // session.clients.forEach(client => {
-                //     // console.log(`идентификатор из сообщения: ${socketId}\nИдентификатор сессии: ${session.sessionId}\n${client.socketId === socketId ? 'вы': 'не вы'}`)
-                //     if(socketId === client.socketId) {
-                //         client.send(JSON.stringify({...message, compareId:client.socketId === socketId}))
-                //     }
-                // })
+            listRooms.forEach(room => {
+                rooms.set(to, room)
             })
+
+            
+            rooms.get(to)
+            .forEach(room => {
+                console.log(to === room.chatId) // если слать сообщение от получателя к отправителю то свойство отправителя будет пустым, нужно поля менять местами, from станет to, а to станет from
+                room.send(JSON.stringify({...message,  compareId:room.socketId === socketId}))
+                console.log(room.chatId === to ? from : to)
+            })
+            // console.log(rooms)
+            // const connections = subArr(sockets, to)
+            // privateSockets.set(to, ...connections)
+
+            // if(privateSockets.has(to)) {
+            //     privateSockets.get(to)
+            //     .forEach(client => {
+            //         // console.log(to + ' ' + 'получатель'|| from + ' ' + 'отправитель')
+            //         if(to || from === client.chatId)
+            //         client.send(JSON.stringify({...message, compareId:client.socketId === socketId}))
+            //     })
+            // }
+            
+            // .forEach(client => client.send(JSON.stringify({...message, compareId:client.socketId === socketId})))
+
+            // console.log(connections.get(to), to)
+            // connections.get(to).forEach(client => client.send(JSON.stringify({...message, compareId:client.socketId === socketId})))
+            // const connections = subArr(sockets, socketId)
+            // console.log(connections)
+
+            // const [ws01,ws02] = connections
+            
+            // connections.forEach(session => {
+            //     console.log(session)
+            // })
+            // console.log(message)
+            // ws01.forEach(client => {
+            //     console.log(client.chatId === to )
+            // })
+
+            // ws02.forEach(client => client.send(JSON.stringify({...message, compareId:client.socketId === socketId})))
+            // connections.forEach(session => {
+            //     const {clients} = session
+            //     console.log(session.clients[0])
+            //     // session.clients.forEach(client => {
+            //     //     // console.log(`идентификатор из сообщения: ${socketId}\nИдентификатор сессии: ${session.sessionId}\n${client.socketId === socketId ? 'вы': 'не вы'}`)
+            //     //     if(socketId === client.socketId) {
+            //     //         client.send(JSON.stringify({...message, compareId:client.socketId === socketId}))
+            //     //     }
+            //     // })
+            // })
             // const [ws1,ws2,ws3,ws4] = subArr(sockets)
             // const [ws1] = subArr(sockets)
 

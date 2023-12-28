@@ -157,14 +157,85 @@
 
 // console.log(subArr(wsList))
 
-const {v4: uuid} = require('uuid')
+// const {v4: uuid} = require('uuid')
 
-const wsList = [{name:'ws01'}, {name:'ws02'}, {name:'ws03'}, {name:'ws04'}]
+// const wsList = [{name:'ws01'}, {name:'ws02'}, {name:'ws03'}, {name:'ws04'}]
 
-const result = []
-const sizeSubArr = 2
-for(let i = 0; Math.ceil(wsList.length / 2) > i; i++) {
-    result.push({clients:wsList.slice((i * sizeSubArr), (i * sizeSubArr) + sizeSubArr), sessionId:uuid()})
+// const result = []
+// const sizeSubArr = 2
+// for(let i = 0; Math.ceil(wsList.length / 2) > i; i++) {
+//     result.push({clients:wsList.slice((i * sizeSubArr), (i * sizeSubArr) + sizeSubArr), sessionId:uuid()})
+// }
+
+// console.log(result)
+
+
+
+
+
+    // const wsList = [{name:'ws01'}, {name:'ws02'}, {name:'ws03'}, {name:'ws04'}]
+    // function arrayСutter(array, elementsSlice=2, ...otherParams) {
+
+    //     for(let index = 0; array.length > index; index++) {
+            
+            
+                
+            
+    //         // console.log(array[Math.ceil(index / 2)], index)
+
+    //     }
+    // }
+
+    // arrayСutter(wsList)
+
+
+    // const array1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; 
+
+    // // const array_size = 2;
+
+    // // const sliced_array = [];
+
+    // // for (let i = 0; i <array.length; i += array_size) {
+    // //     console.log(i, i + array_size )
+    // //     sliced_array.push(array.slice(i, i + array_size));
+    // // }
+
+    // // console.log(sliced_array);
+
+
+
+    // // const array = [], result = [], length = 2; // Объявляем переменные
+    // // for (let x = 1; x <= 233; x++) array.push(x); // Собираем массив
+    // // while(array.length) result.push(array.splice(0,length)); // Разбираем массив
+    // // console.log(result);
+
+    // const a = array1.map((item, index) => {
+    //     console.log(array1.length)
+       
+       
+    // })
+    // console.log(a)
+
+
+// const abc = {name:'kirill', password:'123'}
+
+// console.log('id' in abc)
+
+
+
+
+
+
+
+const rooms  = {}
+const room = 'room01'
+const uuid = 'qwerty'
+const socket = {
+    name:'ws01',
+    metaData: '1234',
+    uuid: 'qwerty'
 }
+if(! rooms[room]) rooms[room]= {};
+if(! rooms[room][uuid]) rooms[room][uuid] = socket
 
-console.log(result)
+console.log(rooms)

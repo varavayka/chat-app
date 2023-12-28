@@ -21,6 +21,8 @@ const Messenger = () => {
 
     const [chatMessage, setChatMessage] = useState([])
     const [destenationChat, setDestenationChat] = useState('')
+    
+
     const ws = useRef(null)
 
     useEffect(() => {
@@ -29,12 +31,6 @@ const Messenger = () => {
       return () =>  ws.current.close()
     },[])
     
-
-
-
-
-
-
     useEffect(() => {
       ws.current.onmessage = ({data}) => {
         const message = JSON.parse(data)
@@ -76,13 +72,25 @@ const Messenger = () => {
           ...inputValue,
           messageType: 'chat_message',
           from: JSON.parse(sessionStorage.getItem('userIdentificators')).yourChatId,
-          to: destenationChat
+          to: destenationChat || response() 
 
         }
+        console.log(messageInstance)
+        
         ws.current.send(JSON.stringify(messageInstance))
         setInputValue({})
       }
 
+      
+      
+    }
+    function response() {
+      let to = ''
+      chatMessage.forEach(({chatId}) => {
+        if(chatId !== JSON.parse(sessionStorage.getItem('userIdentificators')).yourChatId)
+        to = chatId
+      })
+      return to
     }
 
     const searchHandlerUser = (chatId) =>  {
