@@ -1,10 +1,13 @@
-import styles from "./css/searchBar.module.css";
 import { useState } from "react";
-const SearchBar = ({searchHandler}) => {
+import styles from "./css/searchBar.module.css";
+
+const SearchBar = ({searchHandler, showChatList}) => {
   const [inputData, setInputData] = useState('')
-  const { discussion, search, searchbar, input, searchBarButton } = styles;
+  const { discussion, search, searchbar, input, searchBarButton ,chatsList} = styles;
   return (
     <div className={`${discussion} ${search}`}>
+      <div className={chatsList} onClick={showChatList}>
+      </div>
       <div className={`${searchbar}`}>
         <i className=""></i>
         <input 

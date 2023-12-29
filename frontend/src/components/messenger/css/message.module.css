@@ -37,3 +37,11 @@
 .textOnly {
   margin-left: 45px;
 }
+
+
+.text {
+  margin: 0 35px;
+  background-color: #f6f6f6;
+  padding: 15px;
+  border-radius: 12px;
+}

@@ -3,6 +3,7 @@
   align-items: center;
   justify-content: center;
   color: #e0e0e0; */
+  
 
 
   display: flex;
@@ -30,6 +31,7 @@
   display: flex;
   align-items: center;
   cursor: pointer;
+
 }
 
 .discussions .search {
@@ -37,6 +39,8 @@
   align-items: center;
   justify-content: center;
   color: #e0e0e0;
+  justify-content: space-evenly;
+
 }
 
 .search .searchbar input {
@@ -60,6 +64,7 @@
   align-items: center;
   justify-content: center;
   color: #e0e0e0;
+  justify-content: space-evenly;
 }
 
 .search .searchbar {
@@ -94,3 +99,8 @@
   border-radius: 18px;
 
 }
+/* 
+
+.chatsList {
+
+} */

@@ -1,18 +1,20 @@
 import styles from "./css/message.module.css";
 
-const Message = ({ responseAllow, text, children}) => {
-  const { message, photo, online, response, textOnly } = styles;
+const Message = ({ responseAllow, text:messageText, children}) => {
+  const { message, photo, online, response, textOnly,text } = styles;
   
   return (
-    <div className={`${message} ${responseAllow ? textOnly : ""}`}>
-      
-      <div className={!responseAllow ? photo : ""}>
+    <div className={`${message}`}>
+      {/* ${responseAllow ? textOnly : ""} */}
+      <div className={photo}>
+      {/* !responseAllow ? photo : "" */}
         <div className={online}></div>
       </div>
+
       <div className={responseAllow ? response : ""}>
         {children[0]}
-        <p className={`text`}> 
-        {text} 
+        <p className={text}> 
+        {messageText} 
         </p>
         {children[1]}
       </div>

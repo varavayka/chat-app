@@ -1,0 +1,26 @@
+.body {
+  padding: 5%;
+  background-color: #f5f5f5;
+}
+
+.container {
+  padding: 0;
+  background-color: #fff;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+  height: 700px;
+  display: grid;
+}
+.row_01 {
+  display: grid;
+  grid-template-columns: 35% 65%;
+  justify-content: space-between;
+}
+
+
+.discussions {
+  height: 700px;
+  box-shadow: 0px 8px 10px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  background-color: #87a3ec;
+  display: inline-block;
+}

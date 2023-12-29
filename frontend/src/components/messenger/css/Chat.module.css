@@ -1,0 +1,125 @@
+.footer_chat {
+  display: grid;
+  grid-template-columns: 90% 10%;
+  grid-template-rows: 3.2rem;
+  align-items: stretch;
+}
+
+.messages_chat {
+  padding: 25px 35px;
+  overflow: auto;
+  width: 100%;
+  height: 100%;
+}
+
+.chat {
+  width: 100%;
+  display: grid;
+  align-content: space-between;
+  height: 100%;
+  justify-items: stretch;
+  grid-template-rows: 6rem 34rem 4rem;
+}
+
+.chat .messages_chat .message .photo {
+  display: block;
+  width: 45px;
+  height: 45px;
+  background: #e6e7ed;
+  -moz-border-radius: 50px;
+  -webkit-border-radius: 50px;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.chat .messages_chat .text {
+  margin: 0 35px;
+  background-color: #f6f6f6;
+  padding: 15px;
+  border-radius: 12px;
+}
+
+.chat .footer_chat .icon {
+  margin-left: 30px;
+  color: #c0c0c0;
+  font-size: 14pt;
+}
+
+.chat .footer_chat .send {
+  /* margin-right: 4rem; */
+}
+
+.chat .footer_chat .name {
+  margin: 0 0 0 20px;
+  text-transform: uppercase;
+  font-family: "Montserrat", sans-serif;
+  font-size: 13pt;
+  color: #515151;
+}
+
+.chat .footer_chat .right {
+  position: absolute;
+  right: 40px;
+}
+
+.write_message {
+  border: 0;
+  padding: 20px;
+  width: 41rem;
+  height: 3rem;
+  outline: none;
+}
+.clickable {
+  cursor: pointer;
+  margin: auto;
+}
+
+.right {
+  display: grid;
+  justify-content: end;
+}
+
+.left {
+  display: grid;
+  justify-content: flex-start;
+}
+
+.userId {
+  font-size: 15px;
+  color: rgb(104, 103, 103);
+  margin-bottom: 10px;
+  margin-left: 85px;
+}
+
+.time {
+  font-size: 10px;
+  color: lightgrey;
+  margin-bottom: 10px;
+  margin-left: 85px;
+}
+
+.chat .messages_chat .message {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.chat .messages_chat .message .photo {
+  display: block;
+  width: 45px;
+  height: 45px;
+  background: #e6e7ed;
+  -moz-border-radius: 50px;
+  -webkit-border-radius: 50px;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+/* .chat .messages_chat .text {
+    margin: 0 35px;
+    background-color: #f6f6f6;
+    padding: 15px;
+    border-radius: 12px;
+  } */
