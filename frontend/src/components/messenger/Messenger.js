@@ -12,8 +12,9 @@ import Discussion from "./Discussion";
 import Chat from "./Chat";
 const Messenger = () => {
     const {body, container,row_01, discussions} = styles
-    const [allowSend, setAllowSend] = useState(false)
+    // const [allowSend, setAllowSend] = useState(false)
     const [onlineStatus,setOnlineStats] = useState(false)
+    // const [sessionMessageCache, setSessionMessageCache] = useState([])
 
     const [chats, setChats] = useState([])
     const [inputValue,setInputValue] = useState({})
@@ -98,7 +99,7 @@ const Messenger = () => {
                   resultSearchUser.map(({searchPattern,compareId}) => {
                     
                     if(searchPattern && compareId) {
-
+                      
                       return (
                         <div key={v4()}>
                           <Discussion setDestenationChat={setDestenationChat} chatId={searchPattern} setChats={setChats} chats={chats}/> 
@@ -114,9 +115,9 @@ const Messenger = () => {
              
             </section>
             {
-                  resultSearchUser.map(({searchPattern,compareId}) => {
+                  chats.map(({chat}) => {
                     
-                    if(searchPattern && compareId) {
+                    // if(searchPattern && compareId) {
 
                       return (
                         <div key={v4()}>
@@ -125,8 +126,8 @@ const Messenger = () => {
                         </div>
                       )
 
-                    }
-                    return null
+                    // }
+                    // return null
                   })
                 }
           </div>

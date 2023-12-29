@@ -1,7 +1,7 @@
 import styles from "./css/discussion.module.css";
 
 import { useEffect , useRef} from "react";
-const Discussion = ({setDestenationChat, chatId}) => {
+const Discussion = ({setDestenationChat, chatId, setChats, chats}) => {
   const { discussion, photo, online, descContact, name, message, timer } = styles;
   
  
@@ -9,6 +9,7 @@ const Discussion = ({setDestenationChat, chatId}) => {
 
     <div className={discussion} onClick={() => {
       setDestenationChat(chatId)
+      setChats([...chats, {chat: chatId}])
       }}>
       
       <div className={photo}>
